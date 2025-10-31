@@ -13,3 +13,9 @@ Our `scripts` folder contains all our code. Individual R scripts are divided int
 categories, based on their main objective (to process data, analyze data, or create content for
 manuscripts / slides). The `results` folder then includes fitted models, tables, and figures,
 most of which are produced by scripts in `scripts/02_analysis` or `scripts/03_content`.
+
+## Data sources
+
+- Catch and Effort data come from the [WCPFC Public Domain Aggregated Catch/Effort data download page](https://www.wcpfc.int/wcpfc-public-domain-aggregated-catcheffort-data-download-page) (downloaded on Oct 31, 2025)
+  - Tuna Purse Seine data: Aggregated data, grouped by 1°x1° latitude/longitude grids, FLAG, YEAR and QUARTER. [PURSE SEINE fishery. Data cover 1950 to 2023 for the WCPFC Convention Area.](https://www.wcpfc.int/file/1016779/download?token=obsDV8q3)
+  - Tuna Longline data: Aggregated data, grouped by 5°x5° latitude/longitude grids, YEAR and MONTH. [LONGLINE fishery. Data cover 1950 to 2023 for the WCPFC Convention Area.](https://www.wcpfc.int/file/1016770/download?token=W9FwwLOC)
