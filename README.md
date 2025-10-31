@@ -1,4 +1,4 @@
-# High seas pocket closur
+# High seas pocket closure
 
 Repository containing data and code to test for the effects of a High seas closure
 by the PNA. A PDF version of our preregistration file is available [here](PNA_HS_closure_prereg.pdf).
