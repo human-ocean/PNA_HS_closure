@@ -19,3 +19,9 @@ most of which are produced by scripts in `scripts/02_analysis` or `scripts/03_co
 - Catch and Effort data come from the [WCPFC Public Domain Aggregated Catch/Effort data download page](https://www.wcpfc.int/wcpfc-public-domain-aggregated-catcheffort-data-download-page) (downloaded on Oct 31, 2025)
   - Tuna Purse Seine data: Aggregated data, grouped by 1°x1° latitude/longitude grids, FLAG, YEAR and QUARTER. [PURSE SEINE fishery. Data cover 1950 to 2023 for the WCPFC Convention Area.](https://www.wcpfc.int/file/1016779/download?token=obsDV8q3)
   - Tuna Longline data: Aggregated data, grouped by 5°x5° latitude/longitude grids, YEAR and MONTH. [LONGLINE fishery. Data cover 1950 to 2023 for the WCPFC Convention Area.](https://www.wcpfc.int/file/1016770/download?token=W9FwwLOC)
+
+## To do
+
+-[ ] Maps of gridcell effort for HS pocket through time need to be "centered". Do this in `scripts/content/02_h1_map.R`
+-[ ] Verify whether we should incldue both HS pockets or just the large one. Do this in `scripts/01_processing/01_mape_PNA_hs_pocket.R`
+-[ ] Double-check grid cells counted as "control" for H1.
