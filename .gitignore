@@ -49,4 +49,4 @@ po/*~
 rsconnect/
 
 # Zip files
-.zip
+*.zip
