@@ -21,9 +21,7 @@ pacman::p_load(
 )
 
 ## Load data -------------------------------------------------------------------
-data <- read_rds(file = here("data/processed/h1_panel.rds")) |> 
-  mutate(post = 1 * (year > 2009),
-         id = paste(lat, lon))
+data <- read_rds(file = here("data/processed/h1_panel.rds"))
 
 # ESTIMATION ###################################################################
 
@@ -69,7 +67,7 @@ post_ihs <- feols(..ihs ~ ..post | ..fe,
 dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
                       data = data,
                       se = "conley")
-dyn_ihs_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
+dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
                       data = data,
                       se = "conley")
 
@@ -81,7 +79,35 @@ post_ihs_twfe <- feols(..ihs ~ ..post_twfe | ..twfe,
                   data = data,
                   se = "conley")
 
+all_es <- map_dfr(list("No counterfactual" = dyn_lev,
+                       "Counterfactual" = dyn_lev_twfe),
+                  iplot_data,
+                  .id = "model_type") |> 
+  mutate(lhs = ifelse(lhs == "days", "Effort (days)", "Effort (sets)"))
+
 # VISUALIZE ####################################################################
+
+# Build a single visualization
+p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) + 
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 2009, linetype = "dashed") +
+  geom_linerange(aes(ymin = ci_low, ymax = ci_high),
+                 position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5),
+             size = 3,
+             color = "black") +
+  facet_wrap(~lhs, scales = "free_y", ncol = 1) +
+  theme_minimal() +
+  scale_shape_manual(values = c(21, 22)) +
+  scale_fill_manual(values = c("steelblue", "cadetblue")) +
+  guides(fill = FALSE,
+         shape = guide_legend(
+           override.aes = list(shape = c(16, 15))
+         )) +
+  labs(x = "Year",
+       y = "Estimate ± 95% CI",
+       shape = "Model type")
+  
 
 ## Another step ----------------------------------------------------------------
 p1 <- ggiplot(dyn_lev,
@@ -120,7 +146,7 @@ modelsummary::modelsummary(list("A) Self" = post_lev,
                                 "B) Cont" = post_lev_twfe),
                            shape = "rbind",
                            stars = T,
-                           gof_omit = "With|IC|RMSE",
+                           gof_omit = "With|IC|RMSE|FE",
                            coef_map = c("post" = "Post",
                                         "post:treated" = "Post x Treated"),
                            output = "content/tab/reg.tex")
@@ -129,11 +155,14 @@ modelsummary::modelsummary(list("A) Self" = post_ihs,
                                 "B) Cont" = post_ihs_twfe),
                            shape = "rbind",
                            stars = T,
-                           gof_omit = "With|IC|RMSE",
+                           gof_omit = "With|IC|RMSE|FE",
                            coef_map = c("post" = "Post",
                                         "post:treated" = "Post x Treated"),
                            output = "content/tab/reg_ihs.tex")
 
+ggsave(plot = p,
+       filename = here("content/img/h1_event_study.png"),
+       width = 8, height = 5)
 
 ggsave(plot = p1,
        filename = here("content/img/Effort_plot.png"),
@@ -141,6 +170,14 @@ ggsave(plot = p1,
 
 ggsave(plot = p2,
        filename = here("content/img/Effort_plot_ihs.png"),
+       width = 10, height = 2.5)
+
+ggsave(plot = p3,
+       filename = here("content/img/Effort_plot_twfe.png"),
+       width = 10, height = 2.5)
+
+ggsave(plot = p4,
+       filename = here("content/img/Effort_plot_ihs_twfe.png"),
        width = 10, height = 2.5)
 
 # EXPORT #######################################################################

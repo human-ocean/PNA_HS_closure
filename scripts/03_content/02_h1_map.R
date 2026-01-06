@@ -21,19 +21,18 @@ pacman::p_load(
 
 ## Load data -------------------------------------------------------------------
 wcpfc_data <- read_rds(file = here("data/processed/wcpfc_ps_annual.rds"))
-hs_pocket <- read_sf(dsn = here("data/processed/PNA_high_seas_pockets.gpkg"))
+hs_pocket <- read_sf(dsn = here("data/processed/PNA_high_seas_pockets.gpkg")) |> 
+  st_transform(crs = "EPSG:8859")
 hs <- read_sf(dsn = here("data/raw/World_High_Seas_v2_20241010_gpkg/High_Seas_v2.gpkg"))
 eezs <- read_sf(dsn = here("data/processed/PNA_and_neighbor_eezs.gpkg"))
 
-inside_hs <- read_rds(file = here("data/processed/h1_panel.rds")) |> 
-  mutate(post = 1 * (year > 2009),
-         id = paste(lat, lon))
+inside_hs <- read_rds(file = here("data/processed/h1_panel.rds"))
 
 # VISUALIZE ####################################################################
 
 days_map <- ggplot() +
   geom_sf(data = hs_pocket, linewidth = 1, fill = "transparent", color = "black") +
-  geom_sf(data = inside_hs, aes(color = log(days)), size = 2) +
+  geom_sf(data = inside_hs, aes(color = asinh(days)), size = 2) +
   facet_wrap(~year, ncol = 5) +
   scale_color_viridis_c(option = "mako") +
   theme_bw() +
@@ -42,7 +41,7 @@ days_map <- ggplot() +
 
 sets_map <- ggplot() +
   geom_sf(data = hs_pocket, linewidth = 1, fill = "transparent", color = "black") +
-  geom_sf(data = inside_hs, aes(color = log(num_sets)), size = 2) +
+  geom_sf(data = inside_hs, aes(color = asinh(num_sets)), size = 2) +
   facet_wrap(~year, ncol = 5) +
   scale_color_viridis_c(option = "mako") +
   theme_bw() +
@@ -53,7 +52,7 @@ maps <- cowplot::plot_grid(days_map, sets_map)
 
 
 days_ts <- ggplot(inside_hs,
-                  aes(x = year, y = days)) +
+                  aes(x = year, y = days, color = group)) +
   geom_hline(yintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 2009.75, linetype = "dashed") +
   stat_summary(geom = "line", fun = "mean") +
@@ -64,7 +63,7 @@ days_ts <- ggplot(inside_hs,
        y = "Mean effort (days) ± S.E. & 95%CI")
 
 sets_ts <- ggplot(inside_hs,
-                  aes(x = year, y = num_sets)) +
+                  aes(x = year, y = num_sets, color = group)) +
   geom_hline(yintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 2009.75, linetype = "dashed") +
   stat_summary(geom = "line", fun = "mean") +

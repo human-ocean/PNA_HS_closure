@@ -29,7 +29,7 @@ coast <- rnaturalearth::ne_countries() |>
 p <- ggplot() + 
   geom_sf(data = coast, fill = "black") +
   geom_sf(data = eezs, aes(fill = PNA), color = "black") +
-  geom_sf(data = hs_PNA, aes(fill = "High Seas Pockets"), color = "black") +
+  geom_sf(data = hs_pocket, aes(fill = "High Seas Pockets"), color = "black") +
   scale_fill_manual(values = c("High Seas Pockets" = "red",
                                "Party to Nauru Agreement" = "gray50",
                                "Non-Party" = "gray90")) +

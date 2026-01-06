@@ -36,8 +36,7 @@ ps_tuna_clean <- wcpfc %>%
   ) %>%
   select(year, lat, lon, days, num_sets, contains("_mt")) %>%
   mutate(tot_mt = skj_mt + yft_mt + bet_mt) %>%
-  filter(num_sets > 0,
-         tot_mt > 0) %>%
+  filter(tot_mt > 0) %>%
   mutate(
     cpue_skj = skj_mt / num_sets,
     cpue_yft = yft_mt / num_sets,
