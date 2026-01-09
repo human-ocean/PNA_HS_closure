@@ -86,11 +86,11 @@ modelsummary::modelsummary(list("A) Levels" = post_lev_twfe,
                            output = "content/tab/h2_reg.tex")
 
 ggsave(plot = p1,
-       filename = here("content/img/h3_plot_levels.png"),
+       filename = here("content/img/h2_plot_levels.png"),
        width = 10, height = 2.5)
 
 ggsave(plot = p2,
-       filename = here("content/img/h3_plot_logs.png"),
+       filename = here("content/img/h2_plot_logs.png"),
        width = 10, height = 2.5)
 
 # EXPORT #######################################################################
