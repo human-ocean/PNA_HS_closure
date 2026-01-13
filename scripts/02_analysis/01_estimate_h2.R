@@ -41,23 +41,32 @@ setFixest_fml(
 
 setFixest_dict(dict = c("post" = "Post"))
 
+spp <- c("All", "Albacore", "Bigeye", "Yellowfin")
 
 ## Estimate --------------------------------------------------------------------
 # TWFE
 dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
+                      weights = ~hhooks,
                       data = data,
-                      se = "conley")
+                      se = "conley") |> 
+  set_names(spp)
 dyn_log_twfe <- feols(..log ~ ..dyn_twfe | ..twfe,
+                      weights = ~hhooks,
                       data = data,
-                      se = "conley")
+                      se = "conley") |> 
+  set_names(spp)
 
 
 post_lev_twfe <- feols(..levels ~ ..post_twfe | ..twfe,
+                       weights = ~hhooks,
                        data = data,
-                       se = "conley")
+                       se = "conley") |> 
+  set_names(spp)
 post_log_twfe <- feols(..log ~ ..post_twfe | ..twfe,
+                       weights = ~hhooks,
                        data = data,
-                       se = "conley")
+                       se = "conley") |> 
+  set_names(spp)
 
 # VISUALIZE ####################################################################
 
@@ -87,11 +96,11 @@ modelsummary::modelsummary(list("A) Levels" = post_lev_twfe,
 
 ggsave(plot = p1,
        filename = here("content/img/h2_plot_levels.png"),
-       width = 10, height = 2.5)
+       width = 10, height = 5)
 
 ggsave(plot = p2,
        filename = here("content/img/h2_plot_logs.png"),
-       width = 10, height = 2.5)
+       width = 10, height = 5)
 
 # EXPORT #######################################################################
 
