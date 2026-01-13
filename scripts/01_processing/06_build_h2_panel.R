@@ -52,7 +52,7 @@ treated_hs_cells <- exact_extract(wcpfc_rast, hs_pocket, include_xy = T) |>
   bind_rows(.id = "src") |> 
   as.data.frame() |>  
   rename(lon = x, lat = y) |> 
-  select(lon, lat) |> 
+  select(lon, lat, coverage_fraction) |> 
   mutate(treated = 1)
 
 # Step 3) Find control cells: The ones that are entirely within the high seas
@@ -67,13 +67,29 @@ control_hs_cells <- exact_extract(wcpfc_rast, wcpfc_hs_area, include_xy = T) |>
   rename(lon = x, lat = y) |> 
   # filter(coverage_fraction == 1) |> 
   anti_join(treated_hs_cells, by = join_by(lon, lat)) |> 
-  select(lon, lat) |> 
+  select(lon, lat, coverage_fraction) |> 
   mutate(treated = 0)
 
 hs_cateogries <- bind_rows(treated_hs_cells,
                            control_hs_cells)
 
+# Visualize --------------------------------------------------------------------
+p <- ggplot(hs_cateogries |> filter (lon > 0),
+       aes(x = lon, y = lat, fill = coverage_fraction * treated)) +
+  geom_tile(color = "black") +
+  geom_sf(data = hs_pocket, inherit.aes = F, fill = "transparent", color = "gray", linewidth = 2) +
+  geom_point(aes(color = factor(treated))) +
+  theme_bw() +
+  scale_fill_viridis_b(option = "mako") +
+  scale_color_manual(values = c("gray90", "red")) +
+  labs(fill = "% inside HS pocket",
+       color = "Treated",
+       subtitle = "Control pixels in the Western hemisphere not shown")
+# ------------------------------------------------------------------------------
+
+
 h2_panel <- wcpfc_sf |> 
+  st_drop_geometry() |> 
   inner_join(hs_cateogries, by = join_by(lon, lat)) |> 
   mutate(post = 1 * (year > 2009),
          id = paste(lat, lon),
