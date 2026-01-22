@@ -102,8 +102,7 @@ p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) +
   scale_fill_manual(values = c("steelblue", "cadetblue")) +
   guides(fill = FALSE,
          shape = guide_legend(
-           override.aes = list(shape = c(16, 15))
-         )) +
+           override.aes = list(shape = c(16, 15)))) +
   labs(x = "Year",
        y = "Estimate ± 95% CI",
        shape = "Model type")
@@ -112,7 +111,7 @@ p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) +
 ## Another step ----------------------------------------------------------------
 p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
-             facet_args = list(scales = "free_y")) +
+             facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
   scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
@@ -120,7 +119,7 @@ p1 <- ggiplot(dyn_lev,
 
 p2 <- ggiplot(dyn_ihs,
              multi_style = "facet", 
-             facet_args = list(scales = "free_y")) +
+             facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
   scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
@@ -128,7 +127,7 @@ p2 <- ggiplot(dyn_ihs,
 
 p3 <- ggiplot(dyn_lev_twfe,
               multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
+              facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
   scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
@@ -136,7 +135,7 @@ p3 <- ggiplot(dyn_lev_twfe,
 
 p4 <- ggiplot(dyn_ihs_twfe,
               multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
+              facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
   scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
@@ -166,19 +165,19 @@ ggsave(plot = p,
 
 ggsave(plot = p1,
        filename = here("content/img/Effort_plot.png"),
-       width = 10, height = 2.5)
+       width = 5, height = 5)
 
 ggsave(plot = p2,
        filename = here("content/img/Effort_plot_ihs.png"),
-       width = 10, height = 2.5)
+       width = 5, height = 5)
 
 ggsave(plot = p3,
        filename = here("content/img/Effort_plot_twfe.png"),
-       width = 10, height = 2.5)
+       width = 5, height = 5)
 
 ggsave(plot = p4,
        filename = here("content/img/Effort_plot_ihs_twfe.png"),
-       width = 10, height = 2.5)
+       width = 5, height = 5)
 
 # EXPORT #######################################################################
 
