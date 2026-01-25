@@ -90,14 +90,14 @@ ts_days <- ggplot(data = inside_hs,
        y = "Fishing effort (days) ± SE and 95% CI")
 
 ts_sets <- ggplot(data = inside_hs,
-             aes(x = year, y = num_sets)) +
+                  aes(x = year, y = num_sets)) +
   geom_vline(xintercept = 2009.5, linetype = "dashed") +
   stat_summary(geom = "linerange", fun.data = "mean_cl_normal",
                linewidth = 0.5) +
   stat_summary(geom = "linerange", fun.data = "mean_se",
                linewidth = 1.5,
                color = "steelblue") +
-    stat_summary(geom = "point", fun = "mean",
+  stat_summary(geom = "point", fun = "mean",
                size = 3,
                shape = 21,
                fill = "steelblue",

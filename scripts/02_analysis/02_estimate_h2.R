@@ -105,3 +105,59 @@ ggsave(plot = p2,
 # EXPORT #######################################################################
 
 ## The final step --------------------------------------------------------------
+# Do it one species at a time
+
+bet_model <- feols(cpue_bet ~ ..dyn_twfe | ..twfe,
+                   weights = ~hhooks,
+                   data = data |> 
+                     filter(cpue_bet > 0),
+                   se = "conley")
+
+bet_model_did <- feols(cpue_bet ~ ..post_twfe | ..twfe,
+                       weights = ~hhooks,
+                       data = data |> 
+                         filter(cpue_bet > 0),
+                       se = "conley")
+
+bet <- ggiplot(bet_model, col = "orange") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "Year",
+       title = "Effect on Bigeye CPUE (fish / hundred hooks)")
+
+all_model <- feols(cpue_tot ~ ..dyn_twfe | ..twfe,
+                   weights = ~hhooks,
+                   data = data,
+                   se = "conley") |> 
+  ggiplot(aggr_eff = "both")
+
+all_model_did <- feols(cpue_bet ~ ..post_twfe | ..twfe,
+                       weights = ~hhooks,
+                       data = data |> 
+                         filter(cpue_tot > 0),
+                       se = "conley")
+
+all <- ggiplot(bet_model, col = "darkred") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "Year",
+       title = "Effect on all tuna CPUE (fish / hundred hooks)")
+
+bet_and_all <- cowplot::plot_grid(bet, all, ncol = 1)
+
+modelsummary::msummary(list("BET" = bet_model_did,
+                            "All" = all_model_did),
+                       output = "markdown",
+                       stars = T,
+                       gof_omit = "With|IC|RMSE|FE",
+                       coef_map = c("post" = "Post",
+                                    "post:treated" = "Post x Treated"))
+                       
+
+lggsave(plot = bet,
+        filename = here("content/img/h2_bet_plot_levels.png"),
+        width = 10, height = 5)
+
+ggsave(plot = bet_and_all,
+       filename = here("content/img/h2_bet_and_all_plot_levels.png"),
+       width = 5, height = 5)
