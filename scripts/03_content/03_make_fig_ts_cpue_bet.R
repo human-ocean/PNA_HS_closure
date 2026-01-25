@@ -1,0 +1,59 @@
+################################################################################
+# title
+################################################################################
+#
+# Your Name Here
+# Your email here
+# date
+#
+# Description
+#
+################################################################################
+
+# SET UP #######################################################################
+
+## Load packages ---------------------------------------------------------------
+pacman::p_load(
+  here,
+  fixest,
+  tidyverse,
+  ggfixest
+)
+
+## Load data -------------------------------------------------------------------
+data <- read_rds(file = here("data/processed/h2_panel.rds"))
+
+# VISUALIZE ####################################################################
+
+## Another step ----------------------------------------------------------------
+bet_cpue_ts <- data |> 
+  filter(cpue_bet > 0,
+         treated == 1) |> 
+  mutate(post = as.character(post)) |> 
+  ggplot(aes(x = year, y = cpue_bet)) +
+  geom_vline(xintercept = 2009.5, linetype = "dashed") +
+  stat_summary(geom = "linerange", 
+               fun.data = "mean_cl_normal",
+               linewidth = 0.5) +
+  stat_summary(geom = "linerange",
+               fun.data = "mean_se",
+               linewidth = 1.5,
+               color = "orange") +
+  stat_summary(geom = "line", fun = "mean",
+               linewidth = 1,
+               color = "black") +
+  stat_summary(geom = "point", fun = "mean",
+               size = 3,
+               shape = 21,
+               fill = "orange",
+               color = "black") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  guides(fill = FALSE) +
+  labs(x = "Year",
+       y = "CPUE (fish / hundred hooks) ± SE and 95% CI")
+
+ggsave(plot = bet_cpue_ts,
+       filename = here("content/img/fig_ts_cpue_bet.png"),
+       width = 10,
+       height = 5)
