@@ -32,28 +32,29 @@ bet_cpue_ts <- data |>
   mutate(post = as.character(post)) |> 
   ggplot(aes(x = year, y = cpue_bet)) +
   geom_vline(xintercept = 2009.5, linetype = "dashed") +
+  geom_smooth(method = "lm", aes(group = post), color = "black", linetype = "dashed") +
+  stat_summary(geom = "line", fun = "mean",
+               linewidth = 1,
+               color = "black") +
   stat_summary(geom = "linerange", 
                fun.data = "mean_cl_normal",
                linewidth = 0.5) +
   stat_summary(geom = "linerange",
                fun.data = "mean_se",
                linewidth = 1.5,
-               color = "orange") +
-  stat_summary(geom = "line", fun = "mean",
-               linewidth = 1,
-               color = "black") +
+               color = "#d28e00") +
   stat_summary(geom = "point", fun = "mean",
                size = 3,
                shape = 21,
-               fill = "orange",
+               fill = "#d28e00",
                color = "black") +
-  theme_minimal() +
+  theme_linedraw() +
   theme(legend.position = "none") +
-  guides(fill = FALSE) +
+  guides(fill = "none") +
   labs(x = "Year",
        y = "CPUE (fish / hundred hooks) ± SE and 95% CI")
 
 ggsave(plot = bet_cpue_ts,
        filename = here("content/img/fig_ts_cpue_bet.png"),
-       width = 10,
+       width = 8,
        height = 5)

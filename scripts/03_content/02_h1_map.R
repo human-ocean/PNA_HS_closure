@@ -68,20 +68,20 @@ sets_map <- ggplot() +
 ts_days <- ggplot(data = inside_hs,
        aes(x = year, y = days)) +
   geom_vline(xintercept = 2009.5, linetype = "dashed") +
+  stat_summary(geom = "line", fun = "mean",
+               linewidth = 1,
+               color = "black") +
   stat_summary(geom = "linerange", fun.data = "mean_cl_normal",
                linewidth = 0.5) +
   stat_summary(geom = "linerange", fun.data = "mean_se",
                linewidth = 1.5,
-               color = "steelblue") +
-  stat_summary(geom = "line", fun = "mean",
-               linewidth = 1,
-               color = "black") +
+               color = "steelblue3") +
   stat_summary(geom = "point", fun = "mean",
                size = 3,
                shape = 21,
-               fill = "steelblue",
+               fill = "steelblue3",
                color = "black") +
-  theme_minimal() +
+  theme_linedraw() +
   guides(fill = FALSE,
          shape = guide_legend(
            override.aes = list(shape = c(16, 15))
@@ -92,31 +92,26 @@ ts_days <- ggplot(data = inside_hs,
 ts_sets <- ggplot(data = inside_hs,
                   aes(x = year, y = num_sets)) +
   geom_vline(xintercept = 2009.5, linetype = "dashed") +
+  stat_summary(geom = "line", fun = "mean",
+               linewidth = 1,
+               color = "black") +
   stat_summary(geom = "linerange", fun.data = "mean_cl_normal",
                linewidth = 0.5) +
   stat_summary(geom = "linerange", fun.data = "mean_se",
                linewidth = 1.5,
-               color = "steelblue") +
+               color = "steelblue3") +
   stat_summary(geom = "point", fun = "mean",
                size = 3,
                shape = 21,
-               fill = "steelblue",
+               fill = "steelblue3",
                color = "black") +
-  stat_summary(geom = "point", fun = "mean",
-               size = 3,
-               shape = 21,
-               fill = "steelblue",
-               color = "black") +
-  theme_minimal() +
+  theme_linedraw() +
   guides(fill = FALSE,
          shape = guide_legend(
            override.aes = list(shape = c(16, 15))
          )) +
   labs(x = "Year",
        y = "Fishing effort (sets) ± SE and 95% CI")
-
-
-######
 
 
 # EXPORT #######################################################################
@@ -141,3 +136,4 @@ ggsave(plot = ts_sets,
        filename = here("content/img/fig_ts_sets_HS_effort.png"),
        width = 8,
        height = 3.5) 
+

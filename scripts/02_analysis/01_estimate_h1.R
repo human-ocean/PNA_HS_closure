@@ -97,9 +97,9 @@ p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) +
              size = 3,
              color = "black") +
   facet_wrap(~lhs, scales = "free_y", ncol = 1) +
-  theme_minimal() +
+  theme_linedraw() +
   scale_shape_manual(values = c(21, 22)) +
-  scale_fill_manual(values = c("steelblue", "lightblue")) +
+  scale_fill_manual(values = c("steelblue3", "steelblue4")) +
   guides(fill = FALSE,
          shape = guide_legend(
            override.aes = list(shape = c(16, 15)))) +
@@ -112,32 +112,28 @@ p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) +
 p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "lightblue")) +
+  scale_color_manual(values = c("steelblue3", "steelblue4")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p2 <- ggiplot(dyn_ihs,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "lightblue")) +
+  scale_color_manual(values = c("steelblue3", "steelblue4")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p3 <- ggiplot(dyn_lev_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "lightblue")) +
+  scale_color_manual(values = c("steelblue3", "steelblue4")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p4 <- ggiplot(dyn_ihs_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "lightblue")) +
+  scale_color_manual(values = c("steelblue3", "steelblue4")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 

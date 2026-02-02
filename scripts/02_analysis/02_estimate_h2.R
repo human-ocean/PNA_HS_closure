@@ -119,8 +119,7 @@ bet_model_did <- feols(cpue_bet ~ ..post_twfe | ..twfe,
                          filter(cpue_bet > 0),
                        se = "conley")
 
-bet <- ggiplot(bet_model, col = "orange") +
-  theme_minimal() +
+bet <- ggiplot(bet_model, col = "#d28e00") +
   theme(legend.position = "none") +
   labs(x = "Year",
        title = "Effect on Bigeye CPUE (fish / hundred hooks)")
@@ -137,8 +136,7 @@ all_model_did <- feols(cpue_bet ~ ..post_twfe | ..twfe,
                          filter(cpue_tot > 0),
                        se = "conley")
 
-all <- ggiplot(bet_model, col = "darkred") +
-  theme_minimal() +
+all <- ggiplot(bet_model, col = "#c13832") +
   theme(legend.position = "none") +
   labs(x = "Year",
        title = "Effect on all tuna CPUE (fish / hundred hooks)")
@@ -154,7 +152,7 @@ modelsummary::msummary(list("BET" = bet_model_did,
                                     "post:treated" = "Post x Treated"))
                        
 
-lggsave(plot = bet,
+ggsave(plot = bet,
         filename = here("content/img/h2_bet_plot_levels.png"),
         width = 10, height = 5)
 
