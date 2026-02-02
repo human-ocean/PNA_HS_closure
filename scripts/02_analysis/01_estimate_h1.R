@@ -99,7 +99,7 @@ p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) +
   facet_wrap(~lhs, scales = "free_y", ncol = 1) +
   theme_minimal() +
   scale_shape_manual(values = c(21, 22)) +
-  scale_fill_manual(values = c("steelblue", "cadetblue")) +
+  scale_fill_manual(values = c("steelblue", "lightblue")) +
   guides(fill = FALSE,
          shape = guide_legend(
            override.aes = list(shape = c(16, 15)))) +
@@ -113,7 +113,7 @@ p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c("steelblue", "lightblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
@@ -121,7 +121,7 @@ p2 <- ggiplot(dyn_ihs,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c("steelblue", "lightblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
@@ -129,7 +129,7 @@ p3 <- ggiplot(dyn_lev_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c("steelblue", "lightblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
@@ -137,7 +137,7 @@ p4 <- ggiplot(dyn_ihs_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
   theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c("steelblue", "lightblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
@@ -159,6 +159,9 @@ modelsummary::modelsummary(list("A) Self" = post_ihs,
                                         "post:treated" = "Post x Treated"),
                            output = "content/tab/reg_ihs.tex")
 
+# EXPORT #######################################################################
+
+## The final step --------------------------------------------------------------
 ggsave(plot = p,
        filename = here("content/img/h1_event_study.png"),
        width = 8, height = 5)
@@ -178,8 +181,4 @@ ggsave(plot = p3,
 ggsave(plot = p4,
        filename = here("content/img/Effort_plot_ihs_twfe.png"),
        width = 5, height = 5)
-
-# EXPORT #######################################################################
-
-## The final step --------------------------------------------------------------
   
