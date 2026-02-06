@@ -127,16 +127,15 @@ bet <- ggiplot(bet_model, col = "#d28e00") +
 all_model <- feols(cpue_tot ~ ..dyn_twfe | ..twfe,
                    weights = ~hhooks,
                    data = data,
-                   se = "conley") |> 
-  ggiplot(aggr_eff = "both")
+                   se = "conley")
 
-all_model_did <- feols(cpue_bet ~ ..post_twfe | ..twfe,
+all_model_did <- feols(cpue_tot ~ ..post_twfe | ..twfe,
                        weights = ~hhooks,
                        data = data |> 
                          filter(cpue_tot > 0),
                        se = "conley")
 
-all <- ggiplot(bet_model, col = "#c13832") +
+all <- ggiplot(all_model, col = "#c13832") +
   theme(legend.position = "none") +
   labs(x = "Year",
        title = "Effect on all tuna CPUE (fish / hundred hooks)")
