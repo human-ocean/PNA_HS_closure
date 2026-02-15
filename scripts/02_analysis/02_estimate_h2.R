@@ -17,6 +17,7 @@ pacman::p_load(
   here,
   fixest,
   tidyverse,
+  modelsummary,
   ggfixest
 )
 
@@ -29,194 +30,243 @@ data <- read_rds(file = here("data/processed/h2_panel.rds")) |>
 ## Set fixest defaults ---------------------------------------------------------
 setFixest_fml(
   # Outcomes
-  ..levels_mt = ~c(cpue_tot_mt, cpue_alb_mt, cpue_bet_mt, cpue_yft_mt),
-  ..levels_n = ~c(cpue_tot_n, cpue_alb_n, cpue_bet_n, cpue_yft_n),
-  ..log_mt = ~c(log(cpue_tot_mt), log(cpue_alb_mt), log(cpue_bet_mt), log(cpue_yft_mt)),
-  ..log_n = ~c(log(cpue_tot_n), log(cpue_alb_n), log(cpue_bet_n), log(cpue_yft_n)),
-  # Left hand side
-  ..dyn = ~i(year, 2009),
+  ..levels = ~c(cpue_tot_n, cpue_tot_mt),
+  ..logs = ~c(log(cpue_tot_n), log(cpue_tot_mt)),
+  # Base specification
   ..dyn_twfe = ~i(year, treated, 2009),
-  ..post = ~post,
   ..post_twfe = ~post:treated,
   # Fixed effects
-  ..fe = ~id,
-  ..twfe = ~id + year)
+  ..fe = ~id + year)
 
 setFixest_dict(dict = c("post" = "Post"))
 
-spp <- c("All", "Albacore", "Bigeye", "Yellowfin")
+outcomes <- c("fish / 100 hooks", "mt / 100 hooks")
+spp <- c("Albacore", "Bigeye", "Yellowfin")
 
 ## Estimate --------------------------------------------------------------------
-# TWFE
-dyn_lev_twfe_mt <- feols(..levels_mt ~ ..dyn_twfe | ..twfe,
-                      weights = ~hhooks,
-                      data = data,
-                      se = "conley") |> 
-  set_names(spp)
-dyn_lev_twfe_n <- feols(..levels_n ~ ..dyn_twfe | ..twfe,
-                      weights = ~hhooks,
-                      data = data,
-                      se = "conley") |> 
-  set_names(spp)
-
-dyn_log_twfe_mt <- feols(..log_mt ~ ..dyn_twfe | ..twfe,
-                      weights = ~hhooks,
-                      data = data,
-                      se = "conley") |> 
-  set_names(spp)
-dyn_log_twfe_n <- feols(..log_n ~ ..dyn_twfe | ..twfe,
-                      weights = ~hhooks,
-                      data = data,
-                      se = "conley") |> 
-  set_names(spp)
-
-
-post_lev_twfe_mt <- feols(..levels_mt ~ ..post_twfe | ..twfe,
+# 1) For total CPUE
+# Pre/post models
+all_levels_post <- feols(..levels ~ ..post_twfe | ..fe,
+                         weights = ~hhooks,
+                         data = data,
+                         se = "conley") |> 
+  set_names(outcomes)
+all_logs_post <- feols(..logs ~ ..post_twfe | ..fe,
                        weights = ~hhooks,
                        data = data,
                        se = "conley") |> 
-  set_names(spp)
-post_lev_twfe_n <- feols(..levels_n ~ ..post_twfe | ..twfe,
-                       weights = ~hhooks,
-                       data = data,
-                       se = "conley") |> 
-  set_names(spp)
+  set_names(outcomes)
 
-post_log_twfe_mt <- feols(..log_mt ~ ..post_twfe | ..twfe,
-                       weights = ~hhooks,
-                       data = data,
-                       se = "conley") |> 
-  set_names(spp)
-post_log_twfe_n <- feols(..log_n ~ ..post_twfe | ..twfe,
-                       weights = ~hhooks,
-                       data = data,
-                       se = "conley") |> 
-  set_names(spp)
+# Event-study models
+all_levels_es <- feols(..levels ~ ..dyn_twfe | ..fe,
+                     weights = ~hhooks,
+                     data = data,
+                     se = "conley") |> 
+  set_names(outcomes)
+all_logs_es <- feols(..logs ~ ..dyn_twfe | ..fe,
+                     weights = ~hhooks,
+                     data = data,
+                     se = "conley") |> 
+  set_names(outcomes)
+
+# Now for each species ---------------------------------------------------------
+# Do it one species at a time. This requires that, for each species, we remove observations
+# whare a particular column is 0
+fit_spp <- function(spp, spec = "post", outcome = "levels", data){
+  # Filter the data inside
+  inside_data <- data |> 
+    filter(if_any(contains(spp), ~ . > 0)) |> 
+    select(id, lon, lat, year, post, treated, hhooks, contains(spp))
+  
+  names <- colnames(inside_data)
+  updated_names <- str_replace_all(names, spp, "tot")
+  
+  names(inside_data) <- updated_names
+  
+  if (spec == "post") {
+    if (outcome == "levels") {
+      model <- feols(..levels ~ ..post_twfe | ..fe,
+                     weights = ~hhooks,
+                     data = inside_data,
+                     se = "conley")
+    } else if (outcome == "logs") {
+      model <- feols(..logs ~ ..post_twfe | ..fe,
+                     weights = ~hhooks,
+                     data = inside_data,
+                     se = "conley")
+    }
+  } else if (spec == "es") {
+    if (outcome == "levels") {
+      model <- feols(..levels ~ ..dyn_twfe | ..fe,
+                     weights = ~hhooks,
+                     data = inside_data,
+                     se = "conley")
+    } else if (outcome == "logs") {
+      model <- feols(..logs ~ ..dyn_twfe | ..fe,
+                     weights = ~hhooks,
+                     data = inside_data,
+                     se = "conley")
+    }
+  }
+  
+  model <- model |> 
+  set_names(outcomes)
+  
+  return(model)
+}
+
+# 1) For Albacore Tuna
+# Pre/post models
+alb_levels_post <- fit_spp(spp = "alb", outcome = "levels", data = data)
+alb_logs_post <- fit_spp(spp = "alb", outcome = "logs", data = data)
+# Event-study models
+alb_levels_es <- fit_spp(spp = "alb", spec = "es", outcome = "levels", data = data)
+alb_logs_es <- fit_spp(spp = "alb", spec = "es", outcome = "logs", data = data)
+
+# 2) For Bigeye Tuna
+# Pre/post models
+bet_levels_post <- fit_spp(spp = "bet", outcome = "levels", data = data)
+bet_logs_post <- fit_spp(spp = "bet", outcome = "logs", data = data)
+
+# Event-study models
+bet_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", data = data)
+bet_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", data = data)
+
+# 3) For Yellowfin Tuna
+# Pre/post models
+yft_levels_post <- fit_spp(spp = "yft", outcome = "levels", data = data)
+yft_logs_post <- fit_spp(spp = "yft", outcome = "logs", data = data)
+
+# Event-study models
+yft_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", data = data)
+yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = data)
+
 
 # VISUALIZE ####################################################################
 
-## Another step ----------------------------------------------------------------
-p1 <- ggiplot(dyn_lev_twfe_mt,
-              multi_style = "facet", 
+## Build regression tables -----------------------------------------------------
+# Set defaults
+gof_omit <- "With|IC|RMSE|FE|SE"
+stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
+
+msummary(list("A) Levels" = all_levels_post,
+              "B) Logs" = all_logs_post),
+         shape = "rbind",
+         stars = stars,
+         gof_omit = gof_omit)
+
+msummary(list("A) Levels" = alb_levels_post,
+              "B) Logs" = alb_logs_post),
+         shape = "rbind",
+         stars = stars,
+         gof_omit = gof_omit)
+
+msummary(list("A) Levels" = bet_levels_post,
+              "B) Logs" = bet_logs_post),
+         shape = "rbind",
+         stars = stars,
+         gof_omit = gof_omit)
+
+msummary(list("A) Levels" = yft_levels_post,
+              "B) Logs" = yft_logs_post),
+         shape = "rbind",
+         stars = stars,
+         gof_omit = gof_omit)
+
+coef <- list("all_levels" = all_levels_post,
+             "all_logs" = all_logs_post,
+             "alb_levels" = alb_levels_post,
+             "alb_logs" = alb_logs_post,
+             "bet_levels" = bet_levels_post,
+             "bet_logs" = bet_logs_post,
+             "yft_levels" = yft_levels_post,
+             "yft_logs" = yft_logs_post) |> 
+  map_dfr(ggfixest:::coefplot_data, .id = "src") |> 
+  mutate(spp = str_extract(src, "all|alb|bet|yft"),
+         outcome = str_extract(src, "levels|logs"))
+
+## Now build plots -------------------------------------------------------------
+# Coefficient plots
+coefplot_levels <- coef |> 
+  filter(outcome == "levels") |> 
+  ggplot(aes(x = spp, y = estimate)) + 
+  geom_hline(yintercept = 0) +
+  geom_linerange(aes(ymin = ci_low,
+                     ymax = ci_high)) +
+  geom_point() +
+  facet_wrap(~id, scales = "free") +
+  coord_flip() +
+  theme_linedraw()
+
+coefplot_logs <- coef |> 
+  filter(outcome == "logs") |> 
+  ggplot(aes(x = spp, y = estimate)) + 
+  geom_hline(yintercept = 0) +
+  geom_linerange(aes(ymin = ci_low,
+                     ymax = ci_high)) +
+  geom_point() +
+  facet_wrap(~id, scales = "free") +
+  coord_flip() +
+  theme_linedraw()
+
+
+# Event-study plots
+# For all species combined
+all_es <- ggiplot(list(all_levels_es, all_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
+                  facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "All species",
+       x = "Year")
+
+# For albacore  
+alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
               facet_args = list(scales = "free_y")) +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(x = "Year")
-p2 <- ggiplot(dyn_lev_twfe_n,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
+  labs(title = "Albacore",
+       x = "Year")
+
+# For bigeye
+bet_es <- ggiplot(list(bet_levels_es, bet_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
+                  facet_args = list(scales = "free_y")) +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(x = "Year")
+  labs(title = "Bigeye",
+       x = "Year")
 
-p3 <- ggiplot(dyn_log_twfe_mt,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
+# For yellowfin
+yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
+                  facet_args = list(scales = "free_y")) +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(x = "Year")
-p4 <- ggiplot(dyn_log_twfe_n,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(x = "Year")
-
-modelsummary::modelsummary(list("A) Levels" = post_lev_twfe,
-                                "B) Log-transformed" = post_log_twfe),
-                           shape = "rbind",
-                           stars = T,
-                           gof_omit = "With|IC|RMSE|FE",
-                           coef_map = c("post" = "Post",
-                                        "post:treated" = "Post x Treated"),
-                           output = "content/tab/h2_reg.tex")
-
-ggsave(plot = p1,
-       filename = here("content/img/h2_plot_levels.png"),
-       width = 10, height = 5)
-
-ggsave(plot = p2,
-       filename = here("content/img/h2_plot_logs.png"),
-       width = 10, height = 5)
+  labs(title = "Yellowfin",
+       x = "Year")
 
 # EXPORT #######################################################################
 
 ## The final step --------------------------------------------------------------
-# Do it one species at a time
+es_save <- function(plot, spp){
+  
+  ggsave(plot = plot,
+         filename = here("content/img/", paste0("h2_", spp, "_es.png")),
+         width = 14, height = 8)
+}
 
-bet_model_mt <- feols(c(cpue_bet_mt, log(cpue_bet_mt)) ~ ..dyn_twfe | ..twfe,
-                      weights = ~hhooks,
-                      data = data |> 
-                        filter(cpue_bet_mt > 0),
-                      se = "conley")
-bet_model_n <- feols(c(cpue_bet_n, log(cpue_bet_n)) ~ ..dyn_twfe | ..twfe,
-                     weights = ~hhooks,
-                     data = data |> 
-                       filter(cpue_bet_n > 0),
-                     se = "conley")
 
-bet_model_did_mt <- feols(c(cpue_bet_mt, log(cpue_bet_mt)) ~ ..post_twfe | ..twfe,
-                          weights = ~hhooks,
-                          data = data |> 
-                            filter(cpue_bet_mt > 0),
-                          se = "conley")
-bet_model_did_n <- feols(c(cpue_bet_n, log(cpue_bet_n)) ~ ..post_twfe | ..twfe,
-                         weights = ~hhooks,
-                         data = data |> 
-                           filter(cpue_bet_n > 0),
-                         se = "conley")
+plots <- list(all_es,
+              alb_es,
+              bet_es,
+              yft_es)
 
-bet_mt <- ggiplot(bet_model_mt,
-                  multi_style = "facet",
-                  facet_args = list(scales = "free_y")) +
-  theme(legend.position = "none") +
-  labs(x = "Year",
-       title = "Effect on Bigeye CPUE (fish / hundred hooks)")
-
-bet_n <- ggiplot(bet_model_n,
-                 multi_style = "facet",
-                 facet_args = list(scales = "free_y")) +
-  theme(legend.position = "none") +
-  labs(x = "Year",
-       title = "Effect on Bigeye CPUE (fish / hundred hooks)")
-
-all_model <- feols(cpue_tot_mt ~ ..dyn_twfe | ..twfe,
-                   weights = ~hhooks,
-                   data = data,
-                   se = "conley")
-
-all_model_did_mt <- feols(c(cpue_tot_mt, log(cpue_tot_mt)) ~ ..post_twfe | ..twfe,
-                          weights = ~hhooks,
-                          data = data |> 
-                            filter(cpue_tot_mt > 0),
-                          se = "conley")
-all_model_did_n <- feols(cpue_tot_n ~ ..post_twfe | ..twfe,
-                          weights = ~hhooks,
-                          data = data |> 
-                            filter(cpue_tot_n > 0),
-                          se = "conley")
-
-all <- ggiplot(all_model, col = "#c13832") +
-  theme(legend.position = "none") +
-  labs(x = "Year",
-       title = "Effect on all tuna CPUE (fish / hundred hooks)")
-
-bet_and_all <- cowplot::plot_grid(bet, all, ncol = 1)
-
-modelsummary::msummary(list("BET" = bet_model_did_mt,
-                            "All" = all_model_did_mt),
-                       shape = "rbind",
-                       # output = "markdown",
-                       stars = T,
-                       gof_omit = "With|IC|RMSE|FE",
-                       coef_map = c("post" = "Post",
-                                    "post:treated" = "Post x Treated"))
-                       
-
-ggsave(plot = bet,
-        filename = here("content/img/h2_bet_plot_levels.png"),
-        width = 10, height = 5)
-
-ggsave(plot = bet_and_all,
-       filename = here("content/img/h2_bet_and_all_plot_levels.png"),
-       width = 5, height = 5)
+walk2(.x = plots,
+      .y = c("all", "alb", "bet", "yft"),
+      .f = es_save)
