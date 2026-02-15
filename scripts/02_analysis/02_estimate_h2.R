@@ -21,15 +21,18 @@ pacman::p_load(
 )
 
 ## Load data -------------------------------------------------------------------
-data <- read_rds(file = here("data/processed/h2_panel.rds"))
+data <- read_rds(file = here("data/processed/h2_panel.rds")) |> 
+  filter(hhooks > 0)
 
 # ESTIMATION ###################################################################
 
 ## Set fixest defaults ---------------------------------------------------------
 setFixest_fml(
   # Outcomes
-  ..levels = ~c(cpue_tot, cpue_alb, cpue_bet, cpue_yft),
-  ..log = ~c(log(cpue_tot), log(cpue_alb), log(cpue_bet), log(cpue_yft)),
+  ..levels_mt = ~c(cpue_tot_mt, cpue_alb_mt, cpue_bet_mt, cpue_yft_mt),
+  ..levels_n = ~c(cpue_tot_n, cpue_alb_n, cpue_bet_n, cpue_yft_n),
+  ..log_mt = ~c(log(cpue_tot_mt), log(cpue_alb_mt), log(cpue_bet_mt), log(cpue_yft_mt)),
+  ..log_n = ~c(log(cpue_tot_n), log(cpue_alb_n), log(cpue_bet_n), log(cpue_yft_n)),
   # Left hand side
   ..dyn = ~i(year, 2009),
   ..dyn_twfe = ~i(year, treated, 2009),
@@ -45,24 +48,46 @@ spp <- c("All", "Albacore", "Bigeye", "Yellowfin")
 
 ## Estimate --------------------------------------------------------------------
 # TWFE
-dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
+dyn_lev_twfe_mt <- feols(..levels_mt ~ ..dyn_twfe | ..twfe,
                       weights = ~hhooks,
                       data = data,
                       se = "conley") |> 
   set_names(spp)
-dyn_log_twfe <- feols(..log ~ ..dyn_twfe | ..twfe,
+dyn_lev_twfe_n <- feols(..levels_n ~ ..dyn_twfe | ..twfe,
+                      weights = ~hhooks,
+                      data = data,
+                      se = "conley") |> 
+  set_names(spp)
+
+dyn_log_twfe_mt <- feols(..log_mt ~ ..dyn_twfe | ..twfe,
+                      weights = ~hhooks,
+                      data = data,
+                      se = "conley") |> 
+  set_names(spp)
+dyn_log_twfe_n <- feols(..log_n ~ ..dyn_twfe | ..twfe,
                       weights = ~hhooks,
                       data = data,
                       se = "conley") |> 
   set_names(spp)
 
 
-post_lev_twfe <- feols(..levels ~ ..post_twfe | ..twfe,
+post_lev_twfe_mt <- feols(..levels_mt ~ ..post_twfe | ..twfe,
                        weights = ~hhooks,
                        data = data,
                        se = "conley") |> 
   set_names(spp)
-post_log_twfe <- feols(..log ~ ..post_twfe | ..twfe,
+post_lev_twfe_n <- feols(..levels_n ~ ..post_twfe | ..twfe,
+                       weights = ~hhooks,
+                       data = data,
+                       se = "conley") |> 
+  set_names(spp)
+
+post_log_twfe_mt <- feols(..log_mt ~ ..post_twfe | ..twfe,
+                       weights = ~hhooks,
+                       data = data,
+                       se = "conley") |> 
+  set_names(spp)
+post_log_twfe_n <- feols(..log_n ~ ..post_twfe | ..twfe,
                        weights = ~hhooks,
                        data = data,
                        se = "conley") |> 
@@ -71,14 +96,26 @@ post_log_twfe <- feols(..log ~ ..post_twfe | ..twfe,
 # VISUALIZE ####################################################################
 
 ## Another step ----------------------------------------------------------------
-p1 <- ggiplot(dyn_lev_twfe,
+p1 <- ggiplot(dyn_lev_twfe_mt,
+              multi_style = "facet", 
+              facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "Year")
+p2 <- ggiplot(dyn_lev_twfe_n,
               multi_style = "facet", 
               facet_args = list(scales = "free_y")) +
   theme_minimal() +
   theme(legend.position = "none") +
   labs(x = "Year")
 
-p2 <- ggiplot(dyn_log_twfe,
+p3 <- ggiplot(dyn_log_twfe_mt,
+              multi_style = "facet", 
+              facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "Year")
+p4 <- ggiplot(dyn_log_twfe_n,
               multi_style = "facet", 
               facet_args = list(scales = "free_y")) +
   theme_minimal() +
@@ -107,33 +144,57 @@ ggsave(plot = p2,
 ## The final step --------------------------------------------------------------
 # Do it one species at a time
 
-bet_model <- feols(cpue_bet ~ ..dyn_twfe | ..twfe,
-                   weights = ~hhooks,
-                   data = data |> 
-                     filter(cpue_bet > 0),
-                   se = "conley")
+bet_model_mt <- feols(c(cpue_bet_mt, log(cpue_bet_mt)) ~ ..dyn_twfe | ..twfe,
+                      weights = ~hhooks,
+                      data = data |> 
+                        filter(cpue_bet_mt > 0),
+                      se = "conley")
+bet_model_n <- feols(c(cpue_bet_n, log(cpue_bet_n)) ~ ..dyn_twfe | ..twfe,
+                     weights = ~hhooks,
+                     data = data |> 
+                       filter(cpue_bet_n > 0),
+                     se = "conley")
 
-bet_model_did <- feols(cpue_bet ~ ..post_twfe | ..twfe,
-                       weights = ~hhooks,
-                       data = data |> 
-                         filter(cpue_bet > 0),
-                       se = "conley")
+bet_model_did_mt <- feols(c(cpue_bet_mt, log(cpue_bet_mt)) ~ ..post_twfe | ..twfe,
+                          weights = ~hhooks,
+                          data = data |> 
+                            filter(cpue_bet_mt > 0),
+                          se = "conley")
+bet_model_did_n <- feols(c(cpue_bet_n, log(cpue_bet_n)) ~ ..post_twfe | ..twfe,
+                         weights = ~hhooks,
+                         data = data |> 
+                           filter(cpue_bet_n > 0),
+                         se = "conley")
 
-bet <- ggiplot(bet_model, col = "#d28e00") +
+bet_mt <- ggiplot(bet_model_mt,
+                  multi_style = "facet",
+                  facet_args = list(scales = "free_y")) +
   theme(legend.position = "none") +
   labs(x = "Year",
        title = "Effect on Bigeye CPUE (fish / hundred hooks)")
 
-all_model <- feols(cpue_tot ~ ..dyn_twfe | ..twfe,
+bet_n <- ggiplot(bet_model_n,
+                 multi_style = "facet",
+                 facet_args = list(scales = "free_y")) +
+  theme(legend.position = "none") +
+  labs(x = "Year",
+       title = "Effect on Bigeye CPUE (fish / hundred hooks)")
+
+all_model <- feols(cpue_tot_mt ~ ..dyn_twfe | ..twfe,
                    weights = ~hhooks,
                    data = data,
                    se = "conley")
 
-all_model_did <- feols(cpue_tot ~ ..post_twfe | ..twfe,
-                       weights = ~hhooks,
-                       data = data |> 
-                         filter(cpue_tot > 0),
-                       se = "conley")
+all_model_did_mt <- feols(c(cpue_tot_mt, log(cpue_tot_mt)) ~ ..post_twfe | ..twfe,
+                          weights = ~hhooks,
+                          data = data |> 
+                            filter(cpue_tot_mt > 0),
+                          se = "conley")
+all_model_did_n <- feols(cpue_tot_n ~ ..post_twfe | ..twfe,
+                          weights = ~hhooks,
+                          data = data |> 
+                            filter(cpue_tot_n > 0),
+                          se = "conley")
 
 all <- ggiplot(all_model, col = "#c13832") +
   theme(legend.position = "none") +
@@ -142,9 +203,10 @@ all <- ggiplot(all_model, col = "#c13832") +
 
 bet_and_all <- cowplot::plot_grid(bet, all, ncol = 1)
 
-modelsummary::msummary(list("BET" = bet_model_did,
-                            "All" = all_model_did),
-                       output = "markdown",
+modelsummary::msummary(list("BET" = bet_model_did_mt,
+                            "All" = all_model_did_mt),
+                       shape = "rbind",
+                       # output = "markdown",
                        stars = T,
                        gof_omit = "With|IC|RMSE|FE",
                        coef_map = c("post" = "Post",
