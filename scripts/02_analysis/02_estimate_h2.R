@@ -41,7 +41,6 @@ setFixest_fml(
 setFixest_dict(dict = c("post" = "Post"))
 
 outcomes <- c("fish / 100 hooks", "mt / 100 hooks")
-spp <- c("Albacore", "Bigeye", "Yellowfin")
 
 ## Estimate --------------------------------------------------------------------
 # 1) For total CPUE
@@ -151,24 +150,28 @@ stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
 
 msummary(list("A) Levels" = all_levels_post,
               "B) Logs" = all_logs_post),
+         output = here("content", "tab", "h2_reg_all.tex"),
          shape = "rbind",
          stars = stars,
          gof_omit = gof_omit)
 
 msummary(list("A) Levels" = alb_levels_post,
               "B) Logs" = alb_logs_post),
+         output = here("content", "tab", "h2_reg_alb.tex"),
          shape = "rbind",
          stars = stars,
          gof_omit = gof_omit)
 
 msummary(list("A) Levels" = bet_levels_post,
               "B) Logs" = bet_logs_post),
+         output = here("content", "tab", "h2_reg_bet.tex"),
          shape = "rbind",
          stars = stars,
          gof_omit = gof_omit)
 
 msummary(list("A) Levels" = yft_levels_post,
               "B) Logs" = yft_logs_post),
+         output = here("content", "tab", "h2_reg_yft.tex"),
          shape = "rbind",
          stars = stars,
          gof_omit = gof_omit)
@@ -258,7 +261,7 @@ es_save <- function(plot, spp){
   
   ggsave(plot = plot,
          filename = here("content/img/", paste0("h2_", spp, "_es.png")),
-         width = 14, height = 8)
+         width = 10, height = 6)
 }
 
 
@@ -270,3 +273,12 @@ plots <- list(all_es,
 walk2(.x = plots,
       .y = c("all", "alb", "bet", "yft"),
       .f = es_save)
+
+ggsave(plot = coefplot_levels,
+       filename = here("content", "img", "h2_coefplot_levels.png"),
+       width = 6,
+       height = 4)
+ggsave(plot = coefplot_logs,
+       filename = here("content", "img", "h2_coefplot_logs.png"),
+       width = 6,
+       height = 4)
