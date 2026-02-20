@@ -64,56 +64,6 @@ sets_map <- ggplot() +
         legend.title.position = "top") +
   labs(fill = "Fishing effort (log-days)")
 
-############
-ts_days <- ggplot(data = inside_hs,
-       aes(x = year, y = days)) +
-  geom_vline(xintercept = 2009.5, linetype = "dashed") +
-  stat_summary(geom = "line", fun = "mean",
-               linewidth = 1,
-               color = "black") +
-  stat_summary(geom = "linerange", fun.data = "mean_cl_normal",
-               linewidth = 0.5) +
-  stat_summary(geom = "linerange", fun.data = "mean_se",
-               linewidth = 1.5,
-               color = "steelblue3") +
-  stat_summary(geom = "point", fun = "mean",
-               size = 3,
-               shape = 21,
-               fill = "steelblue3",
-               color = "black") +
-  theme_linedraw() +
-  guides(fill = FALSE,
-         shape = guide_legend(
-           override.aes = list(shape = c(16, 15))
-         )) +
-  labs(x = "Year",
-       y = "Fishing effort (days) ± SE and 95% CI")
-
-ts_sets <- ggplot(data = inside_hs,
-                  aes(x = year, y = num_sets)) +
-  geom_vline(xintercept = 2009.5, linetype = "dashed") +
-  stat_summary(geom = "line", fun = "mean",
-               linewidth = 1,
-               color = "black") +
-  stat_summary(geom = "linerange", fun.data = "mean_cl_normal",
-               linewidth = 0.5) +
-  stat_summary(geom = "linerange", fun.data = "mean_se",
-               linewidth = 1.5,
-               color = "steelblue3") +
-  stat_summary(geom = "point", fun = "mean",
-               size = 3,
-               shape = 21,
-               fill = "steelblue3",
-               color = "black") +
-  theme_linedraw() +
-  guides(fill = FALSE,
-         shape = guide_legend(
-           override.aes = list(shape = c(16, 15))
-         )) +
-  labs(x = "Year",
-       y = "Fishing effort (sets) ± SE and 95% CI")
-
-
 # EXPORT #######################################################################
 
 ## The final step --------------------------------------------------------------
@@ -124,16 +74,6 @@ ggsave(plot = days_map,
 
 ggsave(plot = sets_map,
        filename = here("content/img/fig_maps_sets_HS_effort.png"),
-       width = 8,
-       height = 3.5) 
-
-ggsave(plot = ts_days,
-       filename = here("content/img/fig_ts_days_HS_effort.png"),
-       width = 8,
-       height = 3.5) 
-
-ggsave(plot = ts_sets,
-       filename = here("content/img/fig_ts_sets_HS_effort.png"),
        width = 8,
        height = 3.5) 
 
