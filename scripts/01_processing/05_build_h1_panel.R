@@ -75,6 +75,7 @@ hs_cateogries <- bind_rows(treated_hs_cells,
                            control_hs_cells)
 
 h1_panel <- wcpfc_sf |> 
+  st_drop_geometry() |> 
   inner_join(hs_cateogries, by = join_by(lon, lat)) |> 
   mutate(post = 1 * (year > 2009),
          id = paste(lat, lon),
