@@ -250,7 +250,7 @@ paste0("Numbers in parentheses are Conley standard errors with a", se_dist, "rad
 modelsummary(bet_levels_post,
              title = "\\label{tab:h2}Coefficient estimates for change in Bigeye tuna CPUE in
              the high seas pocket after the closure, relative to changes in Bigeye tuna CPUE
-             observed for other high seas areas in the WCPFC convention area.",
+             observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area.",
              stars = stars,
              gof_omit = omit,
              coef_map = coef,
@@ -263,7 +263,7 @@ modelsummary(bet_levels_post,
 ## Build regression tables -----------------------------------------------------
 # Set defaults
 msummary(list("A) Levels" = all_levels_post,
-              "B) Logs" = all_logs_post),
+              "B) Log-transformed" = all_logs_post),
          title = "",
          shape = "rbind",
          stars = stars,
@@ -275,7 +275,7 @@ msummary(list("A) Levels" = all_levels_post,
          output = here("content", "tab", "h2_reg_all.tex"))
 
 msummary(list("A) Levels" = alb_levels_post,
-              "B) Logs" = alb_logs_post),
+              "B) Log-transformed" = alb_logs_post),
          title = "",
          shape = "rbind",
          stars = stars,
@@ -287,7 +287,7 @@ msummary(list("A) Levels" = alb_levels_post,
          output = here("content", "tab", "h2_reg_alb.tex"))
 
 msummary(list("A) Levels" = bet_levels_post,
-              "B) Logs" = bet_logs_post),
+              "B) Log-transformed" = bet_logs_post),
          title = "",
          shape = "rbind",
          stars = stars,
@@ -299,7 +299,7 @@ msummary(list("A) Levels" = bet_levels_post,
          output = here("content", "tab", "h2_reg_bet.tex"))
 
 msummary(list("A) Levels" = yft_levels_post,
-              "B) Logs" = yft_logs_post),
+              "B) Log-transformed" = yft_logs_post),
          title = "",
          shape = "rbind",
          stars = stars,
