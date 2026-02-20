@@ -229,13 +229,11 @@ coef <- c("post" = "Post",
           "post:treated" = "Post x Treated")
 stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
 
-se_dist <- str_extract(attr(bet_levels_es[[1]]$se, "type"), "[:digit:]+km")
+se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "type"), "[:digit:]+km")
 
 # Mean outcomes
-
 mean_n <- mean(data$cpue_bet_n[data$post == 0 & data$treated == 1])
 mean_mt <- mean(data$cpue_bet_mt[data$post == 0 & data$treated == 1])
-
 rows <- tribble(~term, ~fish, ~mt,
                 '$\\bar{Y}_{pre}$', mean_n, mean_mt)
 
