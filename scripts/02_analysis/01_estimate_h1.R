@@ -17,6 +17,7 @@ pacman::p_load(
   here,
   fixest,
   tidyverse,
+  modelsummary,
   ggfixest,
   cowplot
 )
@@ -40,51 +41,62 @@ setFixest_fml(
   ..fe = ~id,
   ..twfe = ~id + year)
 
-setFixest_dict(dict = c("post" = "Post"))
+setFixest_dict(dict = c(post = "Post"))
+
+outcomes_levels <- c("Effort (days)", "Effort (sets)")
+outcomes_ihs <- c("Effort [log(days)]", "Effort [log(sets)]")
 
 
 ## Estimate --------------------------------------------------------------------
 # Self
+## Pre/post regressions
+post_lev <- feols(..levels ~ ..post | ..fe,
+                  data = data,
+                  subset = ~treated ==1,
+                  se = "conley") |> 
+  set_names(outcomes_levels)
+
+post_ihs <- feols(..ihs ~ ..post | ..fe,
+                 data = data,
+                 subset = ~treated ==1,
+                 se = "conley") |> 
+  set_names(outcomes_ihs)
+
+## Event studies
 dyn_lev <- feols(..levels ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
-                 se = "conley")
+                 se = "conley") |> 
+  set_names(outcomes_levels)
 
 dyn_ihs <- feols(..ihs ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
-                 se = "conley")
+                 se = "conley") |> 
+  set_names(outcomes_ihs)
 
-post_lev <- feols(..levels ~ ..post | ..fe,
-                  data = data,
-                  subset = ~treated ==1,
-                  se = "conley")
-post_ihs <- feols(..ihs ~ ..post | ..fe,
-                 data = data,
-                 subset = ~treated ==1,
-                 se = "conley")
-
-# TWFE
-dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
-                      data = data,
-                      se = "conley")
-dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
-                      data = data,
-                      se = "conley")
-
-
+# TWFE -------------------------------------------------------------------------
+## Pre/post regressions
 post_lev_twfe <- feols(..levels ~ ..post_twfe | ..twfe,
                   data = data,
-                  se = "conley")
+                  se = "conley") |> 
+  set_names(outcomes_levels)
+
 post_ihs_twfe <- feols(..ihs ~ ..post_twfe | ..twfe,
                   data = data,
-                  se = "conley")
+                  se = "conley") |> 
+  set_names(outcomes_ihs)
 
-all_es <- map_dfr(list("No counterfactual" = dyn_lev,
-                       "Counterfactual" = dyn_lev_twfe),
-                  iplot_data,
-                  .id = "model_type") |> 
-  mutate(lhs = ifelse(lhs == "days", "Effort (days)", "Effort (sets)"))
+## Event studies
+dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
+                      data = data,
+                      se = "conley") |> 
+  set_names(outcomes_levels)
+
+dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
+                      data = data,
+                      se = "conley") |> 
+  set_names(outcomes_ihs)
 
 # VISUALIZE ####################################################################
 
@@ -92,59 +104,91 @@ all_es <- map_dfr(list("No counterfactual" = dyn_lev,
 p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue3", "steelblue4")) +
+  scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p2 <- ggiplot(dyn_ihs,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue3", "steelblue4")) +
+  scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p3 <- ggiplot(dyn_lev_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue3", "steelblue4")) +
+  scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p4 <- ggiplot(dyn_ihs_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue3", "steelblue4")) +
+  scale_color_manual(values = c("steelblue", "cadetblue")) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 ## Tables
-gof_omit <- "With|IC|RMSE|FE|SE"
+omit <- "With|IC|RMSE|FE|Std"
+coef <- c("post" = "Post",
+          "post:treated" = "Post x Treated")
 stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
 
-modelsummary::modelsummary(post_lev_twfe,
-                           stars = panelsummary:::econ_stars(),
-                           gof_omit = "With|IC|RMSE|FE",
-                           coef_map = c("post" = "Post",
-                                        "post:treated" = "Post x Treated"),
-                           output = "content/tab/reg.tex")
+se_dist <- str_extract(attr(post_lev_twfe[[1]]$se, "type"), "[:digit:]+km")
 
-modelsummary::modelsummary(list("A) Self" = post_lev,
-                                "B) Cont" = post_lev_twfe),
-                           shape = "rbind",
-                           stars = T,
-                           gof_omit = "With|IC|RMSE|FE",
-                           coef_map = c("post" = "Post",
-                                        "post:treated" = "Post x Treated"),
-                           output = "content/tab/reg.tex")
+# Mean outcomes
 
-modelsummary::modelsummary(list("A) Self" = post_ihs,
-                                "B) Cont" = post_ihs_twfe),
-                           shape = "rbind",
-                           stars = T,
-                           gof_omit = "With|IC|RMSE|FE",
-                           coef_map = c("post" = "Post",
-                                        "post:treated" = "Post x Treated"),
-                           output = "content/tab/reg_ihs.tex")
+mean_days <- mean(data$days[data$post == 0 & data$treated == 1])
+mean_sets <- mean(data$num_sets[data$post == 0 & data$treated == 1])
+
+rows <- tribble(~term, ~days, ~sets,
+                '$\\bar{Y}_{pre}$', mean_days, mean_sets)
+
+attr(rows, 'position') <- c(3, 1)
+notes <- c("The unit of observation is a grid cell by year.",
+"All model specifications include fixed effects by year and grid cell.",
+paste0("Numbers in parentheses are Conley standard errors with a", se_dist, "radius."))
+
+# Needs caption
+# Needs mean of Y in pre-treatment period
+modelsummary(post_lev_twfe,
+             title = "\\label{tab:h1}Coefficient estimates for change in fishing effort inside
+             the high seas pocket after the closure, relative to changes in fishing effort
+             observed for other high seas areas in the WCPFC convention area.",
+             stars = stars,
+             gof_omit = omit,
+             coef_map = coef,
+             add_rows = rows,
+             notes = notes,
+             escape = F,
+             output = here("content/tab/h1_reg.tex"))
+
+modelsummary(models = list("A) Levels" = post_lev,
+                           "B) Inverse-hyperbolic sine transformation" = post_ihs),
+             title = "\\label{tab:h1_self}Coefficient estimates for change in fishing effort inside 
+             the high seas pocket after the closure.",
+             shape = "rbind",
+             stars = stars,
+             gof_omit = omit,
+             coef_map = coef,
+             notes = notes,
+             escape = F,
+             output = here("content/tab/h1_reg_self.tex"))
+
+modelsummary(models = list("A) Levels" = post_lev_twfe,
+                           "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
+             title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing effort inside
+             the high seas pocket after the closure, relative to changes in fishing effort
+             observed for other high seas areas in the WCPFC convention area.",
+             shape = "rbind",
+             stars = stars,
+             gof_omit = omit,
+             coef_map = coef,
+             notes = notes,
+             escape = F,
+             output = here("content/tab/h1_reg_twfe.tex"))
+
 
 # Build figure for paper. Panel figure with the following:
 # TS of effort in days and sets for A and B. Then event study in each metric,
