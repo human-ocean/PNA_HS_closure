@@ -44,7 +44,7 @@ setFixest_fml(
 setFixest_dict(dict = c(post = "Post"))
 
 outcomes_levels <- c("Effort (days)", "Effort (sets)")
-outcomes_ihs <- c("Effort [log(days)]", "Effort [log(sets)]")
+outcomes_ihs <- c("Effort [asinh(days)]", "Effort [asinh(sets)]")
 
 
 ## Estimate --------------------------------------------------------------------
