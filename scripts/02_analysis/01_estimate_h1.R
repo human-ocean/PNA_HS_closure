@@ -17,7 +17,8 @@ pacman::p_load(
   here,
   fixest,
   tidyverse,
-  ggfixest
+  ggfixest,
+  cowplot
 )
 
 ## Load data -------------------------------------------------------------------
@@ -87,27 +88,6 @@ all_es <- map_dfr(list("No counterfactual" = dyn_lev,
 
 # VISUALIZE ####################################################################
 
-# Build a single visualization
-p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) + 
-  geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 2009, linetype = "dashed") +
-  geom_linerange(aes(ymin = ci_low, ymax = ci_high),
-                 position = position_dodge(width = 0.5)) +
-  geom_point(position = position_dodge(width = 0.5),
-             size = 3,
-             color = "black") +
-  facet_wrap(~lhs, scales = "free_y", ncol = 1) +
-  theme_linedraw() +
-  scale_shape_manual(values = c(21, 22)) +
-  scale_fill_manual(values = c("steelblue3", "steelblue4")) +
-  guides(fill = FALSE,
-         shape = guide_legend(
-           override.aes = list(shape = c(16, 15)))) +
-  labs(x = "Year",
-       y = "Estimate ± 95% CI",
-       shape = "Model type")
-  
-
 ## Another step ----------------------------------------------------------------
 p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
@@ -137,6 +117,17 @@ p4 <- ggiplot(dyn_ihs_twfe,
   theme(legend.position = "none") +
   labs(x = "Year")
 
+## Tables
+gof_omit <- "With|IC|RMSE|FE|SE"
+stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
+
+modelsummary::modelsummary(post_lev_twfe,
+                           stars = panelsummary:::econ_stars(),
+                           gof_omit = "With|IC|RMSE|FE",
+                           coef_map = c("post" = "Post",
+                                        "post:treated" = "Post x Treated"),
+                           output = "content/tab/reg.tex")
+
 modelsummary::modelsummary(list("A) Self" = post_lev,
                                 "B) Cont" = post_lev_twfe),
                            shape = "rbind",
@@ -155,26 +146,79 @@ modelsummary::modelsummary(list("A) Self" = post_ihs,
                                         "post:treated" = "Post x Treated"),
                            output = "content/tab/reg_ihs.tex")
 
+# Build figure for paper. Panel figure with the following:
+# TS of effort in days and sets for A and B. Then event study in each metric,
+# for C and D.
+
+inside_hs <- read_rds(file = here("data/processed/h1_panel.rds")) |> 
+  filter(treated == 1)
+
+lw <- 0.3
+size <- 2
+
+ts_days <- ggplot(data = inside_hs,
+                  aes(x = year, y = days)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  geom_hline(yintercept = 0,
+             linewidth = lw) +
+  stat_summary(geom = "line", fun = "sum",
+               linetype = "dashed",
+               color = "steelblue") +
+  stat_summary(geom = "point", fun = "sum",
+               size = size,
+               color = "steelblue") +
+  theme_linedraw() +
+  guides(fill = "none",
+         shape = guide_legend(
+           override.aes = list(shape = c(16, 15)))) +
+  labs(x = "Year",
+       y = "Fishing effort (days)")
+
+ts_sets <- ggplot(data = inside_hs,
+                  aes(x = year, y = num_sets)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  geom_hline(yintercept = 0,
+             linewidth = lw) +
+  stat_summary(geom = "line", fun = "sum",
+               linetype = "dashed",
+               color = "cadetblue") +
+  stat_summary(geom = "point", fun = "sum",
+               size = size,
+               color = "cadetblue") +
+  theme_linedraw() +
+  guides(fill = "none",
+         shape = guide_legend(
+           override.aes = list(shape = c(16, 15)))) +
+  labs(x = "Year",
+       y = "Fishing effort (sets)")
+
+es_days <- ggiplot(dyn_lev_twfe[[1]],
+                   geom_style = "ribbon",
+                   col = "steelblue") +
+  labs(title = NULL,
+       x = "Year",
+       y = "Estimate ± 95% CI (days)") +
+  theme_linedraw()
+
+es_sets <- ggiplot(dyn_lev_twfe[[2]],
+                   geom_style = "ribbon",
+                   col = "cadetblue") +
+  labs(title = NULL,
+       x = "Year",
+       y = "Estimate ± 95% CI (sets)") +
+  theme_linedraw()
+
+figure <- plot_grid(ts_days, ts_sets,
+                    es_days, es_sets,
+                    labels = "AUTO")
+
 # EXPORT #######################################################################
 
 ## The final step --------------------------------------------------------------
-ggsave(plot = p,
-       filename = here("content/img/h1_event_study.png"),
-       width = 8, height = 5)
-
-ggsave(plot = p1,
-       filename = here("content/img/Effort_plot.png"),
-       width = 5, height = 5)
-
-ggsave(plot = p2,
-       filename = here("content/img/Effort_plot_ihs.png"),
-       width = 5, height = 5)
-
-ggsave(plot = p3,
-       filename = here("content/img/Effort_plot_twfe.png"),
-       width = 5, height = 5)
-
-ggsave(plot = p4,
-       filename = here("content/img/Effort_plot_ihs_twfe.png"),
-       width = 5, height = 5)
-  
+ggsave(plot = figure,
+       filename = here("content/img/h1_main_figure.png"),
+       width = 9, height = 6)
