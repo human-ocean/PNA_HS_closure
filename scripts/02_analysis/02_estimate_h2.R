@@ -18,7 +18,8 @@ pacman::p_load(
   fixest,
   tidyverse,
   modelsummary,
-  ggfixest
+  ggfixest,
+  cowplot
 )
 
 ## Load data -------------------------------------------------------------------
@@ -143,39 +144,7 @@ yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = data)
 
 # VISUALIZE ####################################################################
 
-## Build regression tables -----------------------------------------------------
-# Set defaults
-gof_omit <- "With|IC|RMSE|FE|SE"
-stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
-
-msummary(list("A) Levels" = all_levels_post,
-              "B) Logs" = all_logs_post),
-         output = here("content", "tab", "h2_reg_all.tex"),
-         shape = "rbind",
-         stars = stars,
-         gof_omit = gof_omit)
-
-msummary(list("A) Levels" = alb_levels_post,
-              "B) Logs" = alb_logs_post),
-         output = here("content", "tab", "h2_reg_alb.tex"),
-         shape = "rbind",
-         stars = stars,
-         gof_omit = gof_omit)
-
-msummary(list("A) Levels" = bet_levels_post,
-              "B) Logs" = bet_logs_post),
-         output = here("content", "tab", "h2_reg_bet.tex"),
-         shape = "rbind",
-         stars = stars,
-         gof_omit = gof_omit)
-
-msummary(list("A) Levels" = yft_levels_post,
-              "B) Logs" = yft_logs_post),
-         output = here("content", "tab", "h2_reg_yft.tex"),
-         shape = "rbind",
-         stars = stars,
-         gof_omit = gof_omit)
-
+# Get coefficient estimates
 coef <- list("all_levels" = all_levels_post,
              "all_logs" = all_logs_post,
              "alb_levels" = alb_levels_post,
@@ -253,6 +222,177 @@ yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
   theme(legend.position = "none") +
   labs(title = "Yellowfin",
        x = "Year")
+
+## Tables for the main text ----------------------------------------------------
+omit <- "With|IC|RMSE|FE|Std"
+coef <- c("post" = "Post",
+          "post:treated" = "Post x Treated")
+stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
+
+se_dist <- str_extract(attr(bet_levels_es[[1]]$se, "type"), "[:digit:]+km")
+
+# Mean outcomes
+
+mean_n <- mean(data$cpue_bet_n[data$post == 0 & data$treated == 1])
+mean_mt <- mean(data$cpue_bet_mt[data$post == 0 & data$treated == 1])
+
+rows <- tribble(~term, ~fish, ~mt,
+                '$\\bar{Y}_{pre}$', mean_n, mean_mt)
+
+attr(rows, 'position') <- c(3, 1)
+
+notes <- c("The unit of observation is a grid cell by year.",
+"All model specifications include fixed effects by year and grid cell.",
+paste0("Numbers in parentheses are Conley standard errors with a", se_dist, "radius."))
+
+# Needs caption
+# Needs mean of Y in pre-treatment period
+modelsummary(bet_levels_post,
+             title = "\\label{tab:h2}Coefficient estimates for change in Bigeye tuna CPUE in
+             the high seas pocket after the closure, relative to changes in Bigeye tuna CPUE
+             observed for other high seas areas in the WCPFC convention area.",
+             stars = stars,
+             gof_omit = omit,
+             coef_map = coef,
+             add_rows = rows,
+             notes = notes,
+             escape = F,
+             output = here("content/tab/h2_reg.tex"))
+
+## Supplementary tables
+## Build regression tables -----------------------------------------------------
+# Set defaults
+msummary(list("A) Levels" = all_levels_post,
+              "B) Logs" = all_logs_post),
+         title = "",
+         shape = "rbind",
+         stars = stars,
+         gof_omit = omit,
+         coef_map = coef,
+         add_rows = rows,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h2_reg_all.tex"))
+
+msummary(list("A) Levels" = alb_levels_post,
+              "B) Logs" = alb_logs_post),
+         title = "",
+         shape = "rbind",
+         stars = stars,
+         gof_omit = omit,
+         coef_map = coef,
+         add_rows = rows,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h2_reg_alb.tex"))
+
+msummary(list("A) Levels" = bet_levels_post,
+              "B) Logs" = bet_logs_post),
+         title = "",
+         shape = "rbind",
+         stars = stars,
+         gof_omit = omit,
+         coef_map = coef,
+         add_rows = rows,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h2_reg_bet.tex"))
+
+msummary(list("A) Levels" = yft_levels_post,
+              "B) Logs" = yft_logs_post),
+         title = "",
+         shape = "rbind",
+         stars = stars,
+         gof_omit = omit,
+         coef_map = coef,
+         add_rows = rows,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h2_reg_yft.tex"))
+
+## Plots for main text ---------------------------------------------------------
+# This will be a 4-panel figure. Each column is CPUE in different units.
+# Top row is raw CPUE time series and bottom row are event-studies
+
+inside_hs <- data |> 
+  filter(treated == 1)
+
+lw <- 0.3
+size <- 2
+
+
+ts_n <- inside_hs |> 
+  ggplot(aes(x = year, y = cpue_bet_n)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  geom_hline(yintercept = 0,
+             linewidth = lw) +
+  stat_summary(geom = "line", fun = "mean",
+               linetype = "dashed",
+               color = "#d28e00") +
+  stat_summary(geom = "linerange", 
+               fun.data = "mean_cl_normal",
+               linewidth = 0.5,
+               color = "#d28e00") +
+  stat_summary(geom = "point", fun = "mean",
+               size = size,
+               color = "#d28e00") +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  guides(fill = "none") +
+  labs(x = "Year",
+       y = "CPUE (fish / hundred hooks)")
+
+ts_mt <- inside_hs |> 
+  ggplot(aes(x = year, y = cpue_bet_mt)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  geom_hline(yintercept = 0,
+             linewidth = lw) +
+  stat_summary(geom = "line", fun = "mean",
+               linetype = "dashed",
+               color = "#f47321") +
+  stat_summary(geom = "linerange", 
+               fun.data = "mean_cl_normal",
+               linewidth = 0.5,
+               color = "#f47321") +
+  stat_summary(geom = "point", fun = "mean",
+               size = size,
+               color = "#f47321") +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  guides(fill = "none") +
+  labs(x = "Year",
+       y = "CPUE (mt / hundred hooks)")
+
+es_n <- ggiplot(bet_levels_es[[1]],
+                geom_style = "ribbon",
+                col = "#d28e00") +
+  labs(title = NULL,
+       x = "Year",
+       y = "Estimate ± 95% CI\n(fish / hundred hooks)") +
+  theme_linedraw()
+
+es_mt <- ggiplot(bet_levels_es[[2]],
+                 geom_style = "ribbon",
+                 col = "#f47321") +
+  labs(title = NULL,
+       x = "Year",
+       y = "Estimate ± 95% CI\n(mt / hundred hooks)") +
+  theme_linedraw()
+
+
+figure <- plot_grid(ts_n, ts_mt,
+                    es_n,es_mt, align = "v",
+                    labels = "AUTO")
+
+figure
+
+ggsave(plot = figure,
+       filename = here("content/img/h2_main_figure.png"),
+       width = 9, height = 6)
 
 # EXPORT #######################################################################
 

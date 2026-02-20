@@ -1,26 +1,24 @@
 \begin{table}
 \centering
-\begin{tabular}[t]{lcccc}
+\caption{\label{tab:h2}Coefficient estimates for change in Bigeye tuna CPUE in
+             the high seas pocket after the closure, relative to changes in Bigeye tuna CPUE
+             observed for other high seas areas in the WCPFC convention area.}
+\centering
+\begin{tabular}[t]{lcc}
 \toprule
-  & All & Albacore & Bigeye & Yellowfin\\
+  & fish / 100 hooks & mt / 100 hooks\\
 \midrule
-\addlinespace[0.5em]
-\multicolumn{5}{l}{\textit{A) Levels}}\\
-\midrule \hspace{1em}Post x Treated & -0.001 & -0.001 & 0.000 & 0.000\\
-\hspace{1em} & (0.003) & (0.001) & (0.001) & (0.002)\\
-\hspace{1em}Num.Obs. & 12626 & 12626 & 12626 & 12626\\
-\hspace{1em}R2 & 0.301 & 0.710 & 0.647 & 0.385\\
-\hspace{1em}R2 Adj. & 0.295 & 0.708 & 0.644 & 0.380\\
-\addlinespace[0.5em]
-\multicolumn{5}{l}{\textit{B) Log-transformed}}\\
-\midrule \hspace{1em}Post x Treated & -0.001 & 0.190 & -0.170* & 0.160\\
-\hspace{1em} & (0.083) & (0.317) & (0.081) & (0.112)\\
-\hspace{1em}Num.Obs. & 12626 & 11685 & 12606 & 12620\\
-\hspace{1em}R2 & 0.409 & 0.688 & 0.751 & 0.457\\
-\hspace{1em}R2 Adj. & 0.404 & 0.686 & 0.749 & 0.453\\
-\midrule\\
-\hspace{1em}Std.Errors & Conley (1100km) & Conley (1100km) & Conley (1100km) & Conley (1100km)\\
+Post x Treated & \num{0.070}** & \num{0.000}\\
+ & (\num{0.035}) & (\num{0.001})\\
+$\bar{Y}_{pre}$ & \num{0.344} & \num{0.013}\\
+\midrule
+Num.Obs. & \num{12606} & \num{12606}\\
+R2 & \num{0.551} & \num{0.648}\\
+R2 Adj. & \num{0.547} & \num{0.645}\\
 \bottomrule
-\multicolumn{5}{l}{\rule{0pt}{1em}+ p $<$ 0.1, * p $<$ 0.05, ** p $<$ 0.01, *** p $<$ 0.001}\\
+\multicolumn{3}{l}{\rule{0pt}{1em}* p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01}\\
+\multicolumn{3}{l}{\rule{0pt}{1em}The unit of observation is a grid cell by year.}\\
+\multicolumn{3}{l}{\rule{0pt}{1em}All model specifications include fixed effects by year and grid cell.}\\
+\multicolumn{3}{l}{\rule{0pt}{1em}Numbers in parentheses are Conley standard errors with a1100kmradius.}\\
 \end{tabular}
 \end{table}
