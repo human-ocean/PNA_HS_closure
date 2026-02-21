@@ -142,87 +142,7 @@ yft_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", data = da
 yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = data)
 
 
-# VISUALIZE ####################################################################
-
-# Get coefficient estimates
-coef <- list("all_levels" = all_levels_post,
-             "all_logs" = all_logs_post,
-             "alb_levels" = alb_levels_post,
-             "alb_logs" = alb_logs_post,
-             "bet_levels" = bet_levels_post,
-             "bet_logs" = bet_logs_post,
-             "yft_levels" = yft_levels_post,
-             "yft_logs" = yft_logs_post) |> 
-  map_dfr(ggfixest:::coefplot_data, .id = "src") |> 
-  mutate(spp = str_extract(src, "all|alb|bet|yft"),
-         outcome = str_extract(src, "levels|logs"))
-
-## Now build plots -------------------------------------------------------------
-# Coefficient plots
-coefplot_levels <- coef |> 
-  filter(outcome == "levels") |> 
-  ggplot(aes(x = spp, y = estimate)) + 
-  geom_hline(yintercept = 0) +
-  geom_linerange(aes(ymin = ci_low,
-                     ymax = ci_high)) +
-  geom_point() +
-  facet_wrap(~id, scales = "free") +
-  coord_flip() +
-  theme_linedraw()
-
-coefplot_logs <- coef |> 
-  filter(outcome == "logs") |> 
-  ggplot(aes(x = spp, y = estimate)) + 
-  geom_hline(yintercept = 0) +
-  geom_linerange(aes(ymin = ci_low,
-                     ymax = ci_high)) +
-  geom_point() +
-  facet_wrap(~id, scales = "free") +
-  coord_flip() +
-  theme_linedraw()
-
-
-# Event-study plots
-# For all species combined
-all_es <- ggiplot(list(all_levels_es, all_logs_es),
-                  geom_style = "ribbon",
-                  multi_style = "facet", 
-                  facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "All species",
-       x = "Year")
-
-# For albacore  
-alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
-                  geom_style = "ribbon",
-                  multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Albacore",
-       x = "Year")
-
-# For bigeye
-bet_es <- ggiplot(list(bet_levels_es, bet_logs_es),
-                  geom_style = "ribbon",
-                  multi_style = "facet", 
-                  facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Bigeye",
-       x = "Year")
-
-# For yellowfin
-yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
-                  geom_style = "ribbon",
-                  multi_style = "facet", 
-                  facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Yellowfin",
-       x = "Year")
-
+# BUILD CONTENTS ###############################################################
 ## Tables for the main text ----------------------------------------------------
 omit <- "With|IC|RMSE|FE|Std"
 coef <- c("post" = "Post",
@@ -318,24 +238,21 @@ inside_hs <- data |>
 lw <- 0.3
 size <- 2
 
-
 ts_n <- inside_hs |> 
   ggplot(aes(x = year, y = cpue_bet_n)) +
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  geom_hline(yintercept = 0,
-             linewidth = lw) +
   stat_summary(geom = "line", fun = "mean",
                linetype = "dashed",
-               color = "#d28e00") +
+               color = bet_color) +
   stat_summary(geom = "linerange", 
                fun.data = "mean_cl_normal",
                linewidth = 0.5,
-               color = "#d28e00") +
+               color = bet_color) +
   stat_summary(geom = "point", fun = "mean",
                size = size,
-               color = "#d28e00") +
+               color = bet_color) +
   theme_linedraw() +
   theme(legend.position = "none") +
   guides(fill = "none") +
@@ -347,18 +264,17 @@ ts_mt <- inside_hs |>
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  geom_hline(yintercept = 0,
-             linewidth = lw) +
   stat_summary(geom = "line", fun = "mean",
                linetype = "dashed",
-               color = "#f47321") +
+               color = bet_color) +
   stat_summary(geom = "linerange", 
                fun.data = "mean_cl_normal",
                linewidth = 0.5,
-               color = "#f47321") +
+               color = bet_color) +
   stat_summary(geom = "point", fun = "mean",
+               pch = 17,
                size = size,
-               color = "#f47321") +
+               color = bet_color) +
   theme_linedraw() +
   theme(legend.position = "none") +
   guides(fill = "none") +
@@ -367,7 +283,7 @@ ts_mt <- inside_hs |>
 
 es_n <- ggiplot(bet_levels_es[[1]],
                 geom_style = "ribbon",
-                col = "#d28e00") +
+                col = bet_color) +
   labs(title = NULL,
        x = "Year",
        y = "Estimate ± 95% CI\n(fish / hundred hooks)") +
@@ -375,7 +291,8 @@ es_n <- ggiplot(bet_levels_es[[1]],
 
 es_mt <- ggiplot(bet_levels_es[[2]],
                  geom_style = "ribbon",
-                 col = "#f47321") +
+                 col = bet_color,
+                 pt.pch = 17) +
   labs(title = NULL,
        x = "Year",
        y = "Estimate ± 95% CI\n(mt / hundred hooks)") +
@@ -386,31 +303,109 @@ figure <- plot_grid(ts_n, ts_mt,
                     es_n,es_mt, align = "v",
                     labels = "AUTO")
 
-figure
 
+## Supplementary figures -------------------------------------------------------
+
+# Get coefficient estimates
+coef <- list("all_levels" = all_levels_post,
+             "all_logs" = all_logs_post,
+             "alb_levels" = alb_levels_post,
+             "alb_logs" = alb_logs_post,
+             "bet_levels" = bet_levels_post,
+             "bet_logs" = bet_logs_post,
+             "yft_levels" = yft_levels_post,
+             "yft_logs" = yft_logs_post) |> 
+  map_dfr(ggfixest:::coefplot_data, .id = "src") |> 
+  mutate(spp = str_extract(src, "all|alb|bet|yft"),
+         outcome = str_extract(src, "levels|logs"))
+
+## Now build plots -------------------------------------------------------------
+# Coefficient plots
+coefplot_levels <- coef |> 
+  filter(outcome == "levels") |> 
+  ggplot(aes(x = spp, y = estimate, color = spp)) + 
+  geom_hline(yintercept = 0) +
+  geom_linerange(aes(ymin = ci_low,
+                     ymax = ci_high),
+             linewidth = lw) +
+  geom_point(size = size) +
+  scale_color_manual(values = all_spp) +
+  facet_wrap(~id, scales = "free") +
+  coord_flip() +
+  theme_linedraw()
+
+coefplot_logs <- coef |> 
+  filter(outcome == "logs") |> 
+  ggplot(aes(x = spp, y = estimate, color = spp)) + 
+  geom_hline(yintercept = 0) +
+  geom_linerange(aes(ymin = ci_low,
+                     ymax = ci_high),
+             linewidth = lw) +
+  geom_point(size = size) +
+  scale_color_manual(values = all_spp) +
+  facet_wrap(~id, scales = "free") +
+  coord_flip() +
+  theme_linedraw()
+
+
+# Event-study plots
+# For all species combined
+all_es <- ggiplot(list(all_levels_es, all_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet",
+                  col = rep(ll_color, 2),
+                  facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "All species",
+       x = "Year")
+
+# For albacore  
+alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
+                  col = rep(alb_color, 2),
+              facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "Albacore",
+       x = "Year")
+
+# For bigeye
+bet_es <- ggiplot(list(bet_levels_es, bet_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
+                  col = rep(bet_color, 2),
+                  facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "Bigeye",
+       x = "Year")
+
+# For yellowfin
+yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
+                  geom_style = "ribbon",
+                  multi_style = "facet", 
+                  col = rep(yft_color, 2),
+                  facet_args = list(scales = "free_y")) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "Yellowfin",
+       x = "Year")
+
+# EXPORT #######################################################################
+
+## Export figures --------------------------------------------------------------
 ggsave(plot = figure,
        filename = here("content/img/h2_main_figure.png"),
        width = 9, height = 6)
 
-# EXPORT #######################################################################
-
-## The final step --------------------------------------------------------------
 es_save <- function(plot, spp){
   
   ggsave(plot = plot,
          filename = here("content/img/", paste0("h2_", spp, "_es.png")),
          width = 10, height = 6)
 }
-
-
-plots <- list(all_es,
-              alb_es,
-              bet_es,
-              yft_es)
-
-walk2(.x = plots,
-      .y = c("all", "alb", "bet", "yft"),
-      .f = es_save)
 
 ggsave(plot = coefplot_levels,
        filename = here("content", "img", "h2_coefplot_levels.png"),
@@ -420,3 +415,12 @@ ggsave(plot = coefplot_logs,
        filename = here("content", "img", "h2_coefplot_logs.png"),
        width = 6,
        height = 4)
+
+plots <- list(all_es,
+              alb_es,
+              bet_es,
+              yft_es)
+
+walk2(.x = plots,
+      .y = c("all", "alb", "bet", "yft"),
+      .f = es_save)
