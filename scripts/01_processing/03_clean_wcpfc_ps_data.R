@@ -39,12 +39,12 @@ ps_tuna_clean <- wcpfc |>
   # Calculate effort, species-level catch, and total catch
   mutate(
     num_sets = sets_una + sets_log + sets_dfad + sets_afad + sets_oth,
-    skj_mt = skj_c_una + skj_c_log + skj_c_dfad + skj_c_afad + skj_c_oth,
-    yft_mt = yft_c_una + yft_c_log + yft_c_dfad + yft_c_afad + yft_c_oth,
     bet_mt = bet_c_una + bet_c_log + bet_c_dfad + bet_c_afad + bet_c_oth,
-    tot_mt = skj_mt + yft_mt + bet_mt) |>
+    skj_mt = skj_c_una + skj_c_log + skj_c_dfad + skj_c_afad + skj_c_oth,
+    yft_mt = yft_c_una + yft_c_log + yft_c_dfad + yft_c_afad + yft_c_oth) |> 
+  mutate(tot_mt = skj_mt + yft_mt + bet_mt) |>
   # Remove cells with no catch info
-  filter(tot_mt > 0) |> # Need to make sure that small catch is not reported as 0
+  filter(tot_mt > 0) |>
   select(year, lat, lon, days, num_sets, contains("_mt")) |>
   # Balance the panel
   complete(year, nesting(lon, lat), fill = list(days = 0,
@@ -67,6 +67,12 @@ ps_tuna_clean <- wcpfc |>
     cpue_tot_days = tot_mt / days
   ) 
 
+
+# Checks
+# Is tot_mt close to sum of BET + SKJ + YFT, to the nearest kilogram?
+near(sum(ps_tuna_clean$tot_mt),
+     (sum(ps_tuna_clean$bet_mt) + sum(ps_tuna_clean$skj_mt) + sum(ps_tuna_clean$yft_mt)),
+     tol = 0.001)
 
 # EXPORT #######################################################################
 
