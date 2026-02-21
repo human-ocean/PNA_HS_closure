@@ -73,7 +73,7 @@ ts <- ggplot(data = total_inside,
        y = "Total catch (mt)",
        color = "Species")
 
-plot <- plot_grid(ts, mean,
+plot <- plot_grid(ts, mean, rel_widths = c(2, 1),
                   labels = "AUTO")
 
 # EXPORT #######################################################################
