@@ -104,28 +104,28 @@ dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
 p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p2 <- ggiplot(dyn_ihs,
              multi_style = "facet", 
              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p3 <- ggiplot(dyn_lev_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p4 <- ggiplot(dyn_ihs_twfe,
               multi_style = "facet", 
               facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
@@ -205,14 +205,12 @@ ts_days <- ggplot(data = inside_hs,
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  geom_hline(yintercept = 0,
-             linewidth = lw) +
   stat_summary(geom = "line", fun = "sum",
                linetype = "dashed",
-               color = "steelblue") +
+               color = ps_color) +
   stat_summary(geom = "point", fun = "sum",
                size = size,
-               color = "steelblue") +
+               color = ps_color) +
   theme_linedraw() +
   guides(fill = "none",
          shape = guide_legend(
@@ -225,14 +223,13 @@ ts_sets <- ggplot(data = inside_hs,
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  geom_hline(yintercept = 0,
-             linewidth = lw) +
   stat_summary(geom = "line", fun = "sum",
                linetype = "dashed",
-               color = "cadetblue") +
+               color = ps_color) +
   stat_summary(geom = "point", fun = "sum",
+               shape = 17,
                size = size,
-               color = "cadetblue") +
+               color = ps_color) +
   theme_linedraw() +
   guides(fill = "none",
          shape = guide_legend(
@@ -242,7 +239,7 @@ ts_sets <- ggplot(data = inside_hs,
 
 es_days <- ggiplot(dyn_lev_twfe[[1]],
                    geom_style = "ribbon",
-                   col = "steelblue") +
+                   col = ps_color) +
   labs(title = NULL,
        x = "Year",
        y = "Estimate ± 95% CI (days)") +
@@ -250,7 +247,8 @@ es_days <- ggiplot(dyn_lev_twfe[[1]],
 
 es_sets <- ggiplot(dyn_lev_twfe[[2]],
                    geom_style = "ribbon",
-                   col = "cadetblue") +
+                   col = ps_color,
+                   pt.pch = 17) +
   labs(title = NULL,
        x = "Year",
        y = "Estimate ± 95% CI (sets)") +
