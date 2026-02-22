@@ -22,6 +22,4 @@ most of which are produced by scripts in `scripts/02_analysis` or `scripts/03_co
 
 ## To do
 
--[ ] Maps of gridcell effort for HS pocket through time need to be "centered". Do this in `scripts/content/02_h1_map.R`
--[ ] Verify whether we should incldue both HS pockets or just the large one. Do this in `scripts/01_processing/01_mape_PNA_hs_pocket.R`
--[ ] Double-check grid cells counted as "control" for H1.
+-[ ] Update H3 code so that the effort used to weight the regressions is the same as whatever we use in the denominator of each CPUE measure.
