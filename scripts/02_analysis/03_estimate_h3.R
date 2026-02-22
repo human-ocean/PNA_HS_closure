@@ -71,13 +71,13 @@ all_ps_logs_post <- feols(..ps_logs ~ ..post_twfe | ..fe,
   set_names(outcomes_ps_logs)
 
 # Event studies
-all_levels_es <- feols(..ps_levels ~ ..dyn_twfe | ..fe,
+all_ps_levels_es <- feols(..ps_levels ~ ..dyn_twfe | ..fe,
       weights = ~num_sets,
       data = ps_data,
       se = "conley") |> 
   set_names(outcomes_ps_levels)
 
-all_logs_es <- feols(..ps_logs ~ ..dyn_twfe | ..fe,
+all_ps_logs_es <- feols(..ps_logs ~ ..dyn_twfe | ..fe,
       weights = ~num_sets,
       data = ps_data,
       se = "conley") |> 
@@ -180,15 +180,15 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
   return(model)
 }
 
-## For purse seine
+## For purse seine -------------------------------------------------------------
 # 1) Bigeye Tuna
 # Pre/post models
 bet_ps_levels_post <- fit_spp(spp = "bet", outcome = "levels", data = ps_data)
 bet_ps_logs_post <- fit_spp(spp = "bet", outcome = "logs", data = ps_data)
 
 # Event-study models
-bet_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", data = ps_data)
-bet_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", data = ps_data)
+bet_ps_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", data = ps_data)
+bet_ps_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", data = ps_data)
 
 # 2) Skijpack models
 # Pre/post models
@@ -196,8 +196,8 @@ skj_ps_levels_post <- fit_spp(spp = "skj", outcome = "levels", data = ps_data)
 skj_ps_logs_post <- fit_spp(spp = "skj", outcome = "logs", data = ps_data)
 
 # Event-study models
-skj_levels_es <- fit_spp(spp = "skj", spec = "es", outcome = "levels", data = ps_data)
-skj_logs_es <- fit_spp(spp = "skj", spec = "es", outcome = "logs", data = ps_data)
+skj_ps_levels_es <- fit_spp(spp = "skj", spec = "es", outcome = "levels", data = ps_data)
+skj_ps_logs_es <- fit_spp(spp = "skj", spec = "es", outcome = "logs", data = ps_data)
 
 # 3) For Yellowfin Tuna
 # Pre/post models
@@ -205,38 +205,38 @@ yft_ps_levels_post <- fit_spp(spp = "yft", outcome = "levels", data = ps_data)
 yft_ps_logs_post <- fit_spp(spp = "yft", outcome = "logs", data = ps_data)
 
 # Event-study models
-yft_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", data = ps_data)
-yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = ps_data)
+yft_ps_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", data = ps_data)
+yft_ps_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = ps_data)
 
 
-## For longline
+## For longline ----------------------------------------------------------------
 # 1) For Albacore
 # Pre/post models
-alb_ps_levels_post <- fit_spp(spp = "alb", outcome = "levels", gear = "ll", data = ll_data)
-alb_ps_logs_post <- fit_spp(spp = "alb", outcome = "logs", gear = "ll", data = ll_data)
+alb_ll_levels_post <- fit_spp(spp = "alb", outcome = "levels", gear = "ll", data = ll_data)
+alb_ll_logs_post <- fit_spp(spp = "alb", outcome = "logs", gear = "ll", data = ll_data)
 
 # Event-study models
-alb_levels_es <- fit_spp(spp = "alb", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
-alb_logs_es <- fit_spp(spp = "alb", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
+alb_ll_levels_es <- fit_spp(spp = "alb", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
+alb_ll_logs_es <- fit_spp(spp = "alb", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
 
 
 # 2) Bigeye Tuna
 # Pre/post models
-bet_ps_levels_post <- fit_spp(spp = "bet", outcome = "levels", gear = "ll", data = ll_data)
-bet_ps_logs_post <- fit_spp(spp = "bet", outcome = "logs", gear = "ll", data = ll_data)
+bet_ll_levels_post <- fit_spp(spp = "bet", outcome = "levels", gear = "ll", data = ll_data)
+bet_ll_logs_post <- fit_spp(spp = "bet", outcome = "logs", gear = "ll", data = ll_data)
 
 # Event-study models
-bet_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
-bet_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
+bet_ll_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
+bet_ll_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
 
 # 3) For Yellowfin Tuna
 # Pre/post models
-yft_ps_levels_post <- fit_spp(spp = "yft", outcome = "levels", gear = "ll", data = ll_data)
-yft_ps_logs_post <- fit_spp(spp = "yft", outcome = "logs", gear = "ll", data = ll_data)
+yft_ll_levels_post <- fit_spp(spp = "yft", outcome = "levels", gear = "ll", data = ll_data)
+yft_ll_logs_post <- fit_spp(spp = "yft", outcome = "logs", gear = "ll", data = ll_data)
 
 # Event-study models
-yft_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
-yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
+yft_ll_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
+yft_ll_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
 
 
 # VISUALIZE ####################################################################
@@ -327,7 +327,7 @@ ts_sets <- ggplot(data = skj_data,
 
 
 
-es_days <- ggiplot(skj_levels_es[[1]],
+es_days <- ggiplot(skj_ps_levels_es[[1]],
                 geom_style = "ribbon",
                 col = skj_color) +
   labs(title = NULL,
@@ -335,7 +335,7 @@ es_days <- ggiplot(skj_levels_es[[1]],
        y = "Estimate ± 95% CI (mt/day)") +
   theme_linedraw()
 
-es_sets <- ggiplot(skj_levels_es[[2]],
+es_sets <- ggiplot(skj_ps_levels_es[[2]],
                  geom_style = "ribbon",
                  col = skj_color,
                  pt.pch = 17) +

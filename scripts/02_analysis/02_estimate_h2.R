@@ -355,7 +355,7 @@ all_es <- ggiplot(list(all_levels_es, all_logs_es),
                   multi_style = "facet",
                   col = rep(ll_color, 2),
                   facet_args = list(scales = "free_y")) +
-  theme_minimal() +
+  theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "All species",
        x = "Year")
@@ -366,7 +366,7 @@ alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
                   multi_style = "facet", 
                   col = rep(alb_color, 2),
               facet_args = list(scales = "free_y")) +
-  theme_minimal() +
+  theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Albacore",
        x = "Year")
@@ -377,7 +377,7 @@ bet_es <- ggiplot(list(bet_levels_es, bet_logs_es),
                   multi_style = "facet", 
                   col = rep(bet_color, 2),
                   facet_args = list(scales = "free_y")) +
-  theme_minimal() +
+  theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Bigeye",
        x = "Year")
@@ -388,7 +388,7 @@ yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
                   multi_style = "facet", 
                   col = rep(yft_color, 2),
                   facet_args = list(scales = "free_y")) +
-  theme_minimal() +
+  theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Yellowfin",
        x = "Year")
