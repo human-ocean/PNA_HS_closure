@@ -22,6 +22,8 @@ pacman::p_load(
   cowplot
 )
 
+source(here("scripts/00_config.R"))
+
 ## Load data -------------------------------------------------------------------
 data <- read_rds(file = here("data/processed/h2_panel.rds")) |> 
   filter(hhooks > 0)
@@ -144,10 +146,8 @@ yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = data)
 
 # BUILD CONTENTS ###############################################################
 ## Tables for the main text ----------------------------------------------------
-omit <- "With|IC|RMSE|FE|Std"
 coef <- c("post" = "Post",
           "post:treated" = "Post x Treated")
-stars <- c("*" = 0.1, "**" = 0.05, "***" = 0.01)
 
 se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "type"), "[:digit:]+km")
 
@@ -159,9 +159,9 @@ rows <- tribble(~term, ~fish, ~mt,
 
 attr(rows, 'position') <- c(3, 1)
 
-notes <- c("The unit of observation is a grid cell by year.",
-"All model specifications include fixed effects by year and grid cell.",
-paste0("Numbers in parentheses are Conley standard errors with a", se_dist, "radius."))
+notes <- c(note_obs, note_fe,
+  paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
+notes_main <- c(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
@@ -169,11 +169,11 @@ modelsummary(bet_levels_post,
              title = "\\label{tab:h2}Coefficient estimates for change in Bigeye tuna CPUE in
              the high seas pocket after the closure, relative to changes in Bigeye tuna CPUE
              observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area.",
-             stars = stars,
-             gof_omit = omit,
+             stars = tab_stars,
+             gof_omit = gof_omit,
              coef_map = coef,
              add_rows = rows,
-             notes = notes,
+             notes = notes_main,
              escape = F,
              output = here("content/tab/h2_reg.tex"))
 
@@ -184,8 +184,8 @@ msummary(list("A) Levels" = all_levels_post,
               "B) Log-transformed" = all_logs_post),
          title = "",
          shape = "rbind",
-         stars = stars,
-         gof_omit = omit,
+         stars = tab_stars,
+         gof_omit = gof_omit,
          coef_map = coef,
          add_rows = rows,
          notes = notes,
@@ -196,8 +196,8 @@ msummary(list("A) Levels" = alb_levels_post,
               "B) Log-transformed" = alb_logs_post),
          title = "",
          shape = "rbind",
-         stars = stars,
-         gof_omit = omit,
+         stars = tab_stars,
+         gof_omit = gof_omit,
          coef_map = coef,
          add_rows = rows,
          notes = notes,
@@ -208,8 +208,8 @@ msummary(list("A) Levels" = bet_levels_post,
               "B) Log-transformed" = bet_logs_post),
          title = "",
          shape = "rbind",
-         stars = stars,
-         gof_omit = omit,
+         stars = tab_stars,
+         gof_omit = gof_omit,
          coef_map = coef,
          add_rows = rows,
          notes = notes,
@@ -220,8 +220,8 @@ msummary(list("A) Levels" = yft_levels_post,
               "B) Log-transformed" = yft_logs_post),
          title = "",
          shape = "rbind",
-         stars = stars,
-         gof_omit = omit,
+         stars = tab_stars,
+         gof_omit = gof_omit,
          coef_map = coef,
          add_rows = rows,
          notes = notes,
@@ -234,9 +234,6 @@ msummary(list("A) Levels" = yft_levels_post,
 
 inside_hs <- data |> 
   filter(treated == 1)
-
-lw <- 0.3
-size <- 2
 
 ts_n <- inside_hs |> 
   ggplot(aes(x = year, y = cpue_bet_n)) +
@@ -251,7 +248,7 @@ ts_n <- inside_hs |>
                linewidth = 0.5,
                color = bet_color) +
   stat_summary(geom = "point", fun = "mean",
-               size = size,
+               size = pt_size,
                color = bet_color) +
   theme_linedraw() +
   theme(legend.position = "none") +
@@ -273,7 +270,7 @@ ts_mt <- inside_hs |>
                color = bet_color) +
   stat_summary(geom = "point", fun = "mean",
                pch = 17,
-               size = size,
+               size = pt_size,
                color = bet_color) +
   theme_linedraw() +
   theme(legend.position = "none") +
@@ -328,7 +325,7 @@ coefplot_levels <- coef |>
   geom_linerange(aes(ymin = ci_low,
                      ymax = ci_high),
              linewidth = lw) +
-  geom_point(size = size) +
+  geom_point(size = pt_size) +
   scale_color_manual(values = all_spp) +
   facet_wrap(~id, scales = "free") +
   coord_flip() +
@@ -341,7 +338,7 @@ coefplot_logs <- coef |>
   geom_linerange(aes(ymin = ci_low,
                      ymax = ci_high),
              linewidth = lw) +
-  geom_point(size = size) +
+  geom_point(size = pt_size) +
   scale_color_manual(values = all_spp) +
   facet_wrap(~id, scales = "free") +
   coord_flip() +
