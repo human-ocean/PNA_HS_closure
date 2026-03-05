@@ -37,11 +37,10 @@ total_inside <- data |>
                names_to = "spp",
                values_to = "mt")
 
-
 # VISUALIZE ####################################################################
 
 ## Get some numbers for the text
-total_inside |> 
+means <- total_inside |> 
   select(spp, mt) |> 
   group_by(spp) |> 
   summarize_all(.funs = c(mean = mean, sd = sd))
@@ -69,7 +68,7 @@ ts <- ggplot(data = total_inside,
   theme(legend.position = "inside",
         legend.justification.inside = c(0, 1),
         legend.position.inside = c(0.01, 0.99)) +
-  labs(x = "Species",
+  labs(x = "Year",
        y = "Total catch (mt)",
        color = "Species")
 
@@ -82,4 +81,4 @@ plot <- plot_grid(ts, mean, rel_widths = c(2, 1),
 ggsave(plot = plot,
        filename = here("content", "img", "fig_ps_catch_inside.png"),
        width = 9,
-       height = 6)
+       height = 3)
