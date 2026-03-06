@@ -146,9 +146,9 @@ rows <- tribble(~term, ~days, ~sets,
 
 attr(rows, 'position') <- c(3, 1)
 
-notes <- c(note_obs, note_fe,
+notes <- paste(note_obs, note_fe,
   paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
-notes_main <- c(notes, note_ybar)
+notes_main <- paste(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
@@ -163,11 +163,11 @@ modelsummary(post_lev_twfe,
              notes = notes_main,
              escape = F,
              output = here("content/tab/h1_reg.tex"))
+wrap_notes(here("content/tab/h1_reg.tex"))
 
 modelsummary(models = list("A) Levels" = post_lev,
                            "B) Inverse-hyperbolic sine transformation" = post_ihs),
-             title = "\\label{tab:h1_self}Coefficient estimates for change in fishing effort inside 
-             the high seas pocket after the closure.",
+             title = "\\label{tab:h1_self}Change in fishing effort inside the high seas pockets",
              shape = "rbind",
              stars = tab_stars,
              gof_omit = gof_omit,
@@ -175,12 +175,12 @@ modelsummary(models = list("A) Levels" = post_lev,
              notes = notes,
              escape = F,
              output = here("content/tab/h1_reg_self.tex"))
+make_small(here("content/tab/h1_reg_self.tex"))
+wrap_notes(here("content/tab/h1_reg_self.tex"))
 
 modelsummary(models = list("A) Levels" = post_lev_twfe,
                            "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
-             title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing effort inside
-             the high seas pocket after the closure, relative to changes in fishing effort
-             observed for other high seas areas in the WCPFC convention area.",
+             title = "\\label{tab:h1_twfe}Change in fishing effort inside the high seas pockets relative to other high seas areas",
              shape = "rbind",
              stars = tab_stars,
              gof_omit = gof_omit,
@@ -188,6 +188,8 @@ modelsummary(models = list("A) Levels" = post_lev_twfe,
              notes = notes,
              escape = F,
              output = here("content/tab/h1_reg_twfe.tex"))
+make_small(here("content/tab/h1_reg_twfe.tex"))
+wrap_notes(here("content/tab/h1_reg_twfe.tex"))
 
 ## Summary stats ---------------------------------------------------------------
 write_summary <- function(x, ts = F, append = T) {

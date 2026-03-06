@@ -159,9 +159,9 @@ rows <- tribble(~term, ~fish, ~mt,
 
 attr(rows, 'position') <- c(3, 1)
 
-notes <- c(note_obs, note_fe,
+notes <- paste(note_obs, note_fe,
   paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
-notes_main <- c(notes, note_ybar)
+notes_main <- paste(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
@@ -176,57 +176,62 @@ modelsummary(bet_levels_post,
              notes = notes_main,
              escape = F,
              output = here("content/tab/h2_reg.tex"))
+wrap_notes(here("content/tab/h2_reg.tex"))
 
 ## Supplementary tables
 ## Build regression tables -----------------------------------------------------
 # Set defaults
 msummary(list("A) Levels" = all_levels_post,
               "B) Log-transformed" = all_logs_post),
-         title = "",
+         title = "Change in CPUE for all tuna species caught by the longline fleet in the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
          coef_map = coef,
-         add_rows = rows,
          notes = notes,
          escape = F,
          output = here("content", "tab", "h2_reg_all.tex"))
+make_small(here("content", "tab", "h2_reg_all.tex"))
+wrap_notes(here("content", "tab", "h2_reg_all.tex"))
 
 msummary(list("A) Levels" = alb_levels_post,
               "B) Log-transformed" = alb_logs_post),
-         title = "",
+         title = "Change in CPUE for Albacore tuna caught by the longline fleet in the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
          coef_map = coef,
-         add_rows = rows,
          notes = notes,
          escape = F,
          output = here("content", "tab", "h2_reg_alb.tex"))
+make_small(here("content", "tab", "h2_reg_alb.tex"))
+wrap_notes(here("content", "tab", "h2_reg_alb.tex"))
 
 msummary(list("A) Levels" = bet_levels_post,
               "B) Log-transformed" = bet_logs_post),
-         title = "",
+         title = "Change in CPUE for Bigeye tuna caught by the longline fleet in the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
          coef_map = coef,
-         add_rows = rows,
          notes = notes,
          escape = F,
          output = here("content", "tab", "h2_reg_bet.tex"))
+make_small(here("content", "tab", "h2_reg_bet.tex"))
+wrap_notes(here("content", "tab", "h2_reg_bet.tex"))
 
 msummary(list("A) Levels" = yft_levels_post,
               "B) Log-transformed" = yft_logs_post),
-         title = "",
+         title = "Change in CPUE for Yellowfin tuna caught by the longline fleet in the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
          coef_map = coef,
-         add_rows = rows,
          notes = notes,
          escape = F,
          output = here("content", "tab", "h2_reg_yft.tex"))
+make_small(here("content", "tab", "h2_reg_yft.tex"))
+wrap_notes(here("content", "tab", "h2_reg_yft.tex"))
 
 ## Plots for main text ---------------------------------------------------------
 # This will be a 4-panel figure. Each column is CPUE in different units.
@@ -351,7 +356,9 @@ all_es <- ggiplot(list(all_levels_es, all_logs_es),
                   geom_style = "ribbon",
                   multi_style = "facet",
                   col = rep(ll_color, 2),
-                  facet_args = list(scales = "free_y")) +
+                  pt.pch = 1,
+                  facet_args = list(scales = "free_y",
+                                    ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "All species",
@@ -362,7 +369,9 @@ alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
                   geom_style = "ribbon",
                   multi_style = "facet", 
                   col = rep(alb_color, 2),
-              facet_args = list(scales = "free_y")) +
+                  pt.pch = 1,
+              facet_args = list(scales = "free_y",
+                                ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Albacore",
@@ -373,7 +382,9 @@ bet_es <- ggiplot(list(bet_levels_es, bet_logs_es),
                   geom_style = "ribbon",
                   multi_style = "facet", 
                   col = rep(bet_color, 2),
-                  facet_args = list(scales = "free_y")) +
+                  pt.pch = 1,
+                  facet_args = list(scales = "free_y",
+                                    ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Bigeye",
@@ -384,7 +395,9 @@ yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
                   geom_style = "ribbon",
                   multi_style = "facet", 
                   col = rep(yft_color, 2),
-                  facet_args = list(scales = "free_y")) +
+                  pt.pch = 1,
+                  facet_args = list(scales = "free_y",
+                                    ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Yellowfin",
@@ -396,13 +409,6 @@ yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
 ggsave(plot = figure,
        filename = here("content/img/h2_main_figure.png"),
        width = 9, height = 6)
-
-es_save <- function(plot, spp){
-  
-  ggsave(plot = plot,
-         filename = here("content/img/", paste0("h2_", spp, "_es.png")),
-         width = 10, height = 6)
-}
 
 ggsave(plot = coefplot_levels,
        filename = here("content", "img", "h2_coefplot_levels.png"),
@@ -420,4 +426,5 @@ plots <- list(all_es,
 
 walk2(.x = plots,
       .y = c("all", "alb", "bet", "yft"),
-      .f = es_save)
+      .f = es_save,
+      prefix = "h2")

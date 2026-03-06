@@ -1,6 +1,8 @@
 \begin{table}
 \centering
-\caption{}
+\begin{threeparttable}
+\small
+\caption{Change in CPUE for Bigeye tuna caught by the longline fleet in the high seas pockets}
 \centering
 \begin{tabular}[t]{lcc}
 \toprule
@@ -10,21 +12,20 @@
 \multicolumn{3}{l}{\textit{A) Levels}}\\
 \midrule \hspace{1em}Post x Treated & 0.070** & 0.000\\
 \hspace{1em} & (0.035) & (0.001)\\
-\hspace{1em}$\bar{Y}_{pre}$ & 0.344 & 0.013\\
-\hspace{1em}R2 & 0.551 & 0.648\\
+\hspace{1em}R2 Adj. & 0.547 & 0.645\\
 \addlinespace[0.5em]
 \multicolumn{3}{l}{\textit{B) Log-transformed}}\\
-\midrule \hspace{1em}R2 Adj. & 0.547 & 0.645\\
-\hspace{1em}Post x Treated & 0.037 & -0.170**\\
+\midrule \hspace{1em}Post x Treated & 0.037 & -0.170**\\
 \hspace{1em} & (0.092) & (0.081)\\
-\hspace{1em}R2 & 0.708 & 0.751\\
-\midrule\\
 \hspace{1em}R2 Adj. & 0.706 & 0.749\\
-Num.Obs. & 12606 & 12606\\
+\midrule\\
+\hspace{1em}Num.Obs. & 12606 & 12606\\
 \bottomrule
-\multicolumn{3}{l}{\rule{0pt}{1em}* p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01}\\
-\multicolumn{3}{l}{\rule{0pt}{1em}The unit of observation is a grid cell by year.}\\
-\multicolumn{3}{l}{\rule{0pt}{1em}All model specifications include fixed effects by year and grid cell.}\\
-\multicolumn{3}{l}{\rule{0pt}{1em}Numbers in parentheses are Conley standard errors with a 1100km radius.}\\
 \end{tabular}
+\begin{tablenotes}
+\small
+\item * p $<$ 0.1, ** p $<$ 0.05, *** p $<$ 0.01
+\item The unit of observation is a grid cell by year. All model specifications include fixed effects by year and grid cell. Numbers in parentheses are Conley standard errors with a 1100km radius.
+\end{tablenotes}
+\end{threeparttable}
 \end{table}

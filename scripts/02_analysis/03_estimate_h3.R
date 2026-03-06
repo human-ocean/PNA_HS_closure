@@ -91,6 +91,18 @@ all_ll_logs_post <- feols(..ll_logs ~ ..post_twfe | ..fe,
                             se = "conley") |>
   set_names(outcomes_ll_logs)
 
+# Event studies
+all_ll_levels_es <- feols(..ll_levels ~ ..dyn_twfe | ..fe,
+                          weights = ~hhooks,
+                          data = ll_data,
+                          se = "conley") |>
+  set_names(outcomes_ll_levels)
+all_ll_logs_es <- feols(..ll_logs ~ ..dyn_twfe | ..fe,
+                        weights = ~hhooks,
+                        data = ll_data,
+                        se = "conley") |>
+  set_names(outcomes_ll_logs)
+
 
 ## Species-level regressions ---------------------------------------------------
 fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
@@ -177,7 +189,6 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
 # Pre/post models
 bet_ps_levels_post <- fit_spp(spp = "bet", outcome = "levels", data = ps_data)
 bet_ps_logs_post <- fit_spp(spp = "bet", outcome = "logs", data = ps_data)
-
 # Event-study models
 bet_ps_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", data = ps_data)
 bet_ps_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", data = ps_data)
@@ -186,7 +197,6 @@ bet_ps_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", data = ps_
 # Pre/post models
 skj_ps_levels_post <- fit_spp(spp = "skj", outcome = "levels", data = ps_data)
 skj_ps_logs_post <- fit_spp(spp = "skj", outcome = "logs", data = ps_data)
-
 # Event-study models
 skj_ps_levels_es <- fit_spp(spp = "skj", spec = "es", outcome = "levels", data = ps_data)
 skj_ps_logs_es <- fit_spp(spp = "skj", spec = "es", outcome = "logs", data = ps_data)
@@ -195,7 +205,6 @@ skj_ps_logs_es <- fit_spp(spp = "skj", spec = "es", outcome = "logs", data = ps_
 # Pre/post models
 yft_ps_levels_post <- fit_spp(spp = "yft", outcome = "levels", data = ps_data)
 yft_ps_logs_post <- fit_spp(spp = "yft", outcome = "logs", data = ps_data)
-
 # Event-study models
 yft_ps_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", data = ps_data)
 yft_ps_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = ps_data)
@@ -206,17 +215,14 @@ yft_ps_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = ps_
 # Pre/post models
 alb_ll_levels_post <- fit_spp(spp = "alb", outcome = "levels", gear = "ll", data = ll_data)
 alb_ll_logs_post <- fit_spp(spp = "alb", outcome = "logs", gear = "ll", data = ll_data)
-
 # Event-study models
 alb_ll_levels_es <- fit_spp(spp = "alb", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
 alb_ll_logs_es <- fit_spp(spp = "alb", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
-
 
 # 2) Bigeye Tuna
 # Pre/post models
 bet_ll_levels_post <- fit_spp(spp = "bet", outcome = "levels", gear = "ll", data = ll_data)
 bet_ll_logs_post <- fit_spp(spp = "bet", outcome = "logs", gear = "ll", data = ll_data)
-
 # Event-study models
 bet_ll_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
 bet_ll_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
@@ -225,7 +231,6 @@ bet_ll_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", gear = "ll
 # Pre/post models
 yft_ll_levels_post <- fit_spp(spp = "yft", outcome = "levels", gear = "ll", data = ll_data)
 yft_ll_logs_post <- fit_spp(spp = "yft", outcome = "logs", gear = "ll", data = ll_data)
-
 # Event-study models
 yft_ll_levels_es <- fit_spp(spp = "yft", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
 yft_ll_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
@@ -250,9 +255,9 @@ rows <- tribble(~term, ~fish, ~mt,
 
 attr(rows, 'position') <- c(3, 1)
 
-notes <- c(note_obs, note_fe,
+notes <- paste(note_obs, note_fe,
   paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
-notes_main <- c(notes, note_ybar)
+notes_main <- paste(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
@@ -267,6 +272,114 @@ modelsummary(skj_ps_levels_post,
              notes = notes_main,
              escape = F,
              output = here("content/tab/h3_reg.tex"))
+wrap_notes(here("content/tab/h3_reg.tex"))
+
+## Supplementary tables --------------------------------------------------------
+# Purse seine
+msummary(list("A) Levels" = all_ps_levels_post,
+              "B) Log-transformed" = all_ps_logs_post),
+         title = "Change in CPUE for all tuna species caught by the purse seine fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_all_ps.tex"))
+make_small(here("content", "tab", "h3_reg_all_ps.tex"))
+wrap_notes(here("content", "tab", "h3_reg_all_ps.tex"))
+
+msummary(list("A) Levels" = bet_ps_levels_post,
+              "B) Log-transformed" = bet_ps_logs_post),
+         title = "Change in CPUE for Bigeye tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_bet_ps.tex"))
+make_small(here("content", "tab", "h3_reg_bet_ps.tex"))
+wrap_notes(here("content", "tab", "h3_reg_bet_ps.tex"))
+
+msummary(list("A) Levels" = skj_ps_levels_post,
+              "B) Log-transformed" = skj_ps_logs_post),
+         title = "Change in CPUE for Skipjack tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_skj_ps.tex"))
+make_small(here("content", "tab", "h3_reg_skj_ps.tex"))
+wrap_notes(here("content", "tab", "h3_reg_skj_ps.tex"))
+
+msummary(list("A) Levels" = yft_ps_levels_post,
+              "B) Log-transformed" = yft_ps_logs_post),
+         title = "Change in CPUE for Yellowfin tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_yft_ps.tex"))
+make_small(here("content", "tab", "h3_reg_yft_ps.tex"))
+wrap_notes(here("content", "tab", "h3_reg_yft_ps.tex"))
+
+# Longline
+msummary(list("A) Levels" = all_ll_levels_post,
+              "B) Log-transformed" = all_ll_logs_post),
+         title = "Change in CPUE for all tuna species caught by the longline fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_all_ll.tex"))
+make_small(here("content", "tab", "h3_reg_all_ll.tex"))
+wrap_notes(here("content", "tab", "h3_reg_all_ll.tex"))
+
+msummary(list("A) Levels" = alb_ll_levels_post,
+              "B) Log-transformed" = alb_ll_logs_post),
+         title = "Change in CPUE for Albacore tuna caught by the longline fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_alb_ll.tex"))
+make_small(here("content", "tab", "h3_reg_alb_ll.tex"))
+wrap_notes(here("content", "tab", "h3_reg_alb_ll.tex"))
+
+msummary(list("A) Levels" = bet_ll_levels_post,
+              "B) Log-transformed" = bet_ll_logs_post),
+         title = "Change in CPUE for Bigeye tuna caught by the longline fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_bet_ll.tex"))
+make_small(here("content", "tab", "h3_reg_bet_ll.tex"))
+wrap_notes(here("content", "tab", "h3_reg_bet_ll.tex"))
+
+msummary(list("A) Levels" = yft_ll_levels_post,
+              "B) Log-transformed" = yft_ll_logs_post),
+         title = "Change in CPUE for Yellowfin tuna caught by the longline fleet within 100 nm of the high seas pockets",
+         shape = "rbind",
+         stars = tab_stars,
+         gof_omit = gof_omit,
+         coef_map = coef,
+         notes = notes,
+         escape = F,
+         output = here("content", "tab", "h3_reg_yft_ll.tex"))
+make_small(here("content", "tab", "h3_reg_yft_ll.tex"))
+wrap_notes(here("content", "tab", "h3_reg_yft_ll.tex"))
 
 ## Main text figures -----------------------------------------------------------
 ts_days <- ggplot(data = skj_data,
@@ -313,7 +426,6 @@ ts_sets <- ggplot(data = skj_data,
        y = "CPUE (mt/set)")
 
 
-
 es_days <- ggiplot(skj_ps_levels_es[[1]],
                 geom_style = "ribbon",
                 col = skj_color) +
@@ -341,5 +453,110 @@ ggsave(plot = figure,
 
 # EXPORT #######################################################################
 
+## Supplementary event-study figures -------------------------------------------
 
-## The final step --------------------------------------------------------------  
+# Purse seine
+all_ps_es <- ggiplot(c(all_ps_levels_es, all_ps_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(ps_color, 4),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "All species (purse seine)",
+       x = "Year")
+
+bet_ps_es <- ggiplot(c(bet_ps_levels_es, bet_ps_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(bet_color, 4),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "Bigeye (purse seine)",
+       x = "Year")
+
+skj_ps_es <- ggiplot(c(skj_ps_levels_es, skj_ps_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(skj_color, 4),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "Skipjack (purse seine)",
+       x = "Year")
+
+yft_ps_es <- ggiplot(c(yft_ps_levels_es, yft_ps_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(yft_color, 4),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "Yellowfin (purse seine)",
+       x = "Year")
+
+# Longline
+all_ll_es <- ggiplot(list(all_ll_levels_es, all_ll_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(ll_color, 2),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "All species (longline)",
+       x = "Year")
+
+alb_ll_es <- ggiplot(list(alb_ll_levels_es, alb_ll_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(alb_color, 2),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "Albacore (longline)",
+       x = "Year")
+
+bet_ll_es <- ggiplot(list(bet_ll_levels_es, bet_ll_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(bet_color, 2),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "Bigeye (longline)",
+       x = "Year")
+
+yft_ll_es <- ggiplot(list(yft_ll_levels_es, yft_ll_logs_es),
+                     geom_style = "ribbon",
+                     multi_style = "facet",
+                     col = rep(yft_color, 2),
+                     pt.pch = 1,
+                     facet_args = list(scales = "free_y",
+                                       ncol = 2)) +
+  theme_linedraw() +
+  theme(legend.position = "none") +
+  labs(title = "Yellowfin (longline)",
+       x = "Year")
+
+## Save event-study figures ----------------------------------------------------
+plots <- list(all_ps_es, bet_ps_es, skj_ps_es, yft_ps_es,
+              all_ll_es, alb_ll_es, bet_ll_es, yft_ll_es)
+names <- c("all_ps", "bet_ps", "skj_ps", "yft_ps",
+           "all_ll", "alb_ll", "bet_ll", "yft_ll")
+
+walk2(.x = plots, .y = names, .f = es_save, prefix = "h3")
