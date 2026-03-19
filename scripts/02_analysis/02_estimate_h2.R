@@ -233,6 +233,27 @@ msummary(list("A) Levels" = yft_levels_post,
 make_small(here("content", "tab", "h2_reg_yft.tex"))
 wrap_notes(here("content", "tab", "h2_reg_yft.tex"))
 
+## Summary stats ---------------------------------------------------------------
+write_summary <- function(x, ts = F, append = T) {
+  # browser()
+  timestamp <- if(ts) {paste("---", Sys.Date(), "---\n")} else {""}
+  
+  cat(paste0(timestamp, x, "\n"),
+      file = here("content", "summaries", "h2_summaries.tex"),
+      append = append)
+  cat("\n\n",
+      file = here("content", "summaries", "h2_summaries.tex"), append = T)
+}
+
+write_summary("Notes for H2", ts = T, append = F)
+
+data |> 
+  group_by(treated) |> 
+  summarize(n = n_distinct(id)) |> 
+  kableExtra::kbl(format = "simple",
+                  caption = "N per treatment group") |>
+  write_summary()
+
 ## Plots for main text ---------------------------------------------------------
 # This will be a 4-panel figure. Each column is CPUE in different units.
 # Top row is raw CPUE time series and bottom row are event-studies

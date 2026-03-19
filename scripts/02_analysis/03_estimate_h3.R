@@ -381,6 +381,35 @@ msummary(list("A) Levels" = yft_ll_levels_post,
 make_small(here("content", "tab", "h3_reg_yft_ll.tex"))
 wrap_notes(here("content", "tab", "h3_reg_yft_ll.tex"))
 
+## Summary stats ---------------------------------------------------------------
+write_summary <- function(x, ts = F, append = T) {
+  # browser()
+  timestamp <- if(ts) {paste("---", Sys.Date(), "---\n")} else {""}
+  
+  cat(paste0(timestamp, x, "\n"),
+      file = here("content", "summaries", "h3_summaries.tex"),
+      append = append)
+  cat("\n\n",
+      file = here("content", "summaries", "h3_summaries.tex"), append = T)
+}
+
+write_summary("Notes for H3", ts = T, append = F)
+
+ps_data |> 
+  group_by(near) |> 
+  summarize(n = n_distinct(id)) |> 
+  kableExtra::kbl(format = "simple",
+                  caption = "N per treatment group for purse seine") |>
+  write_summary()
+
+ll_data |> 
+  group_by(near) |> 
+  summarize(n = n_distinct(id)) |> 
+  kableExtra::kbl(format = "simple",
+                  caption = "N per treatment group for longline") |>
+  write_summary()
+
+# FIGURES ######################################################################
 ## Main text figures -----------------------------------------------------------
 ts_days <- ggplot(data = skj_data,
                mapping = aes(x = year, y = cpue_skj_days)) +

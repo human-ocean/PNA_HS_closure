@@ -194,14 +194,16 @@ wrap_notes(here("content/tab/h1_reg_twfe.tex"))
 ## Summary stats ---------------------------------------------------------------
 write_summary <- function(x, ts = F, append = T) {
   # browser()
-  timestamp <- if(ts) {paste("---", Sys.time(), "---\n")} else {""}
+  timestamp <- if(ts) {paste("---", Sys.Date(), "---\n")} else {""}
   
   cat(paste0(timestamp, x, "\n"),
       file = here("content", "summaries", "h1_summaries.tex"),
       append = append)
+  cat("\n\n",
+      file = here("content", "summaries", "h1_summaries.tex"), append = T)
 }
 
-write_summary("Mean annual effort inside HS pockets\n", ts = T, append = F)
+write_summary("Notes for H1", ts = T, append = F)
 
 data |> 
   filter(treated == 1,
@@ -212,7 +214,15 @@ data |>
             .groups = "drop") |> 
   select(-year) |> 
   summarize_all(c(mean = mean, sd = sd)) |>
-  kableExtra::kbl(format = "simple") |>
+  kableExtra::kbl(format = "simple",
+                  caption = "Mean annual effort inside HS pockets") |>
+  write_summary()
+
+data |> 
+  group_by(treated) |> 
+  summarize(n = n_distinct(id)) |> 
+  kableExtra::kbl(format = "simple",
+                  caption = "N per treatment group") |>
   write_summary()
 
 ## Figures ---------------------------------------------------------------------
