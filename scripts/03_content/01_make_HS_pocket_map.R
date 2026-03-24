@@ -27,7 +27,7 @@ eezs <- read_sf(dsn = here("data/raw/World_EEZ_v12_20231025_gpkg/eez_v12.gpkg"))
   st_break_antimeridian(lon_0 = 150) |>
   st_transform(crs = "EPSG:8859") |> 
   st_make_valid() |> 
-  st_crop(st_buffer(pna, 1000000))
+  st_crop(st_buffer(PNA_eezs, 1000000))
 
 wcpfc <- read_sf(dsn = here("data/processed/WCPFC_convention_area.gpkg"))
 hs_pocket <- read_sf(dsn = here("data/processed/PNA_high_seas_pockets.gpkg"))
@@ -35,7 +35,7 @@ hs_pocket <- read_sf(dsn = here("data/processed/PNA_high_seas_pockets.gpkg"))
 coast <- rnaturalearth::ne_countries() |> 
   st_break_antimeridian(lon_0 = 150) |>
   st_transform(crs = "EPSG:8859") |> 
-  st_crop(st_buffer(pna, 1000000))
+  st_crop(st_buffer(PNA_eezs, 1000000))
 
 mounts <- read_sf(here("data/raw/YessonEtAl2019-Seamounts-V2/YessonEtAl2019-SeamountBases-V2.shp"))
 
@@ -43,7 +43,7 @@ mounts <- read_sf(here("data/raw/YessonEtAl2019-Seamounts-V2/YessonEtAl2019-Seam
 shallow_mounts <- mounts |> 
   st_centroid() |>
   st_transform(st_crs(PNA_eezs)) |> 
-  st_crop(pna) |> 
+  st_crop(PNA_eezs) |> 
   mutate(depth = abs(Depth),
          shallow = depth <= 150) |> 
   arrange(depth) |> 
@@ -68,7 +68,7 @@ p <- ggplot() +
           color = "black") +
   scale_fill_manual(values = c("Non-PNA EEZ" = "gray90",
                                "PNA EEZ" = "gray50",
-                               "High Seas Pockets" = "red")) +
+                               "High Seas Pockets" = "cadetblue")) +
   theme_bw() +
   theme(legend.position = "inside",
         legend.position.inside = c(0.99, 0.99),
@@ -85,8 +85,8 @@ p_mounts <- p +
           color = "black") +
   scale_fill_manual(values = c("Non-PNA EEZ" = "gray90",
                                "PNA EEZ" = "gray50",
-                               "High Seas Pockets" = "red",
-                               "Shallow seamounts" = "darkblue"))
+                               "High Seas Pockets" = "cadetblue",
+                               "Shallow seamounts" = "steelblue"))
 
 
 # EXPORT #######################################################################
@@ -101,3 +101,4 @@ ggsave(plot = p_mounts,
        filename = here("content/img/fig_seamount_density.png"),
        width = 6,
        height = 4)
+
