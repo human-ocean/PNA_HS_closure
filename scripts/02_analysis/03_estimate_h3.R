@@ -22,14 +22,19 @@ pacman::p_load(
   cowplot
 )
 
+# Modelsummary keeps changing the way they build columns
+options(modelsummary_factory_latex = "kableExtra")
+
 source(here("scripts/00_config.R"))
 
 ## Load data -------------------------------------------------------------------
 ps_data <- read_rds(file = here("data/processed/h3_ps_panel.rds")) |> 
-  filter(days > 0)
+  filter(days > 0,
+         zone %in% c("near", "far"))
 
 ll_data <- read_rds(file = here("data/processed/h3_ll_panel.rds")) |> 
-  filter(hhooks > 0)
+  filter(hhooks > 0,
+         zone %in% c("near", "far"))
 
 # ESTIMATION ###################################################################
 
