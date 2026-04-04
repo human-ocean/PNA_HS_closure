@@ -19,7 +19,8 @@ pacman::p_load(
   tidyverse,
   modelsummary,
   ggfixest,
-  cowplot
+  cowplot,
+  magick
 )
 
 source(here("scripts/00_config.R"))
@@ -304,6 +305,25 @@ ts_mt <- inside_hs |>
   labs(x = "Year",
        y = "CPUE (mt / hundred hooks)")
 
+bet_raster <- as.raster(
+  image_read_svg(here::here("data/raw/fish_pics/BET.svg"), width = 500)
+)
+
+ts_mt_build <- ggplot_build(ts_mt)
+ts_mt_xrange <- ts_mt_build$layout$panel_params[[1]]$x.range
+ts_mt_yrange <- ts_mt_build$layout$panel_params[[1]]$y.range
+img_w <- 7.5
+img_aspect <- nrow(bet_raster) / ncol(bet_raster)
+panel_ratio <- 1.56
+img_h <- img_w * img_aspect * (diff(ts_mt_yrange) / diff(ts_mt_xrange)) * panel_ratio
+
+ts_mt <- ts_mt +
+  annotation_raster(bet_raster,
+                    xmin = ts_mt_xrange[2] - img_w,
+                    xmax = ts_mt_xrange[2],
+                    ymin = ts_mt_yrange[2] - img_h,
+                    ymax = ts_mt_yrange[2])
+
 es_n <- ggiplot(bet_levels_es[[1]],
                 geom_style = "ribbon",
                 col = bet_color) +
@@ -323,7 +343,7 @@ es_mt <- ggiplot(bet_levels_es[[2]],
 
 
 figure <- plot_grid(ts_n, ts_mt,
-                    es_n,es_mt, align = "v",
+                    es_n, es_mt,
                     labels = "AUTO")
 
 
