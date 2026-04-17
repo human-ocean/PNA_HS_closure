@@ -22,7 +22,7 @@ pacman::p_load(
 )
 
 ## Load data -------------------------------------------------------------------
-# HIgh seas pockets
+# High seas pockets
 hs_pocket <- st_read(here("data/processed/PNA_high_seas_pockets.gpkg")) |> 
   st_union()
 eezs <- st_read(here("data/processed/PNA_eezs.gpkg")) |> 
@@ -68,7 +68,7 @@ ll_wcpfc_sf <- ll_wcpfc_data |>
            crs = "EPSG:4326",
            remove = F)
 
-# VISUALIZE ####################################################################
+# BUILD THE PANEL ##############################################################
 
 # Step 1) Find points with centroid inside but where fising is still allowed ---
 ## Build a raster of pixels
