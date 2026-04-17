@@ -19,17 +19,23 @@ pacman::p_load(
   tidyverse,
   modelsummary,
   ggfixest,
-  cowplot
+  cowplot,
+  magick
 )
+
+# Modelsummary keeps changing the way they build columns
+options(modelsummary_factory_latex = "kableExtra")
 
 source(here("scripts/00_config.R"))
 
 ## Load data -------------------------------------------------------------------
 ps_data <- read_rds(file = here("data/processed/h3_ps_panel.rds")) |> 
-  filter(days > 0)
+  filter(days > 0,
+         zone %in% c("near", "far"))
 
 ll_data <- read_rds(file = here("data/processed/h3_ll_panel.rds")) |> 
-  filter(hhooks > 0)
+  filter(hhooks > 0,
+         zone %in% c("near", "far"))
 
 # ESTIMATION ###################################################################
 
@@ -454,6 +460,24 @@ ts_sets <- ggplot(data = skj_data,
   labs(x = "Year",
        y = "CPUE (mt/set)")
 
+skj_raster <- as.raster(
+  image_read_svg(here::here("data/raw/fish_pics/SKJ.svg"), width = 500)
+)
+
+ts_sets_build <- ggplot_build(ts_sets)
+ts_sets_xrange <- ts_sets_build$layout$panel_params[[1]]$x.range
+ts_sets_yrange <- ts_sets_build$layout$panel_params[[1]]$y.range
+img_w <- 7.5
+img_aspect <- nrow(skj_raster) / ncol(skj_raster)
+panel_ratio <- 1.56
+img_h <- img_w * img_aspect * (diff(ts_sets_yrange) / diff(ts_sets_xrange)) * panel_ratio
+
+ts_sets <- ts_sets +
+  annotation_raster(skj_raster,
+                    xmin = ts_sets_xrange[2] - img_w,
+                    xmax = ts_sets_xrange[2],
+                    ymin = ts_sets_yrange[2] - img_h,
+                    ymax = ts_sets_yrange[2])
 
 es_days <- ggiplot(skj_ps_levels_es[[1]],
                 geom_style = "ribbon",
