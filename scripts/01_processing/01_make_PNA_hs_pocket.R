@@ -50,7 +50,7 @@ hs_PNA <- hs |>
   st_crop(eezs) |> 
   st_cast(to = "POLYGON") |> 
   mutate(id = 1:n()) |> 
-  filter(id %in% c(6, 8)) %>% #id 15 is the large polygon, id 17 is the small one to the west
+  filter(id %in% c(6, 8)) %>% #id 6 is the large polygon, id 8 is the small one to the west
   mutate(area_km2 = st_area(.),
          area_km2 = units::set_units(area_km2, "km2")) |> 
   select(id, area_km2, source) |> 
