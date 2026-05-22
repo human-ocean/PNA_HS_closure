@@ -34,7 +34,7 @@ ps_data <- read_rds(file = here("data/processed/h3_ps_panel.rds")) |>
          zone %in% c("near", "far"))
 
 ll_data <- read_rds(file = here("data/processed/h3_ll_panel.rds")) |> 
-  filter(hhooks > 0,
+  filter(thooks > 0,
          zone %in% c("near", "far"))
 
 # ESTIMATION ###################################################################
@@ -56,8 +56,8 @@ setFixest_dict(dict = c("post" = "Post"))
 outcomes_ps_levels <- c("CPUE (mt/day)", "CPUE (mt/set)")
 outcomes_ps_logs <- c("Effort [log(mt/day)]", "Effort [log(mt/set)]")
 
-outcomes_ll_levels <- c("CPUE (fish/hundred hooks)", "CPUE (mt/hundred hooks)")
-outcomes_ll_logs <- c("Effort [log(fish/hundred hooks)]", "Effort [log(mt/hundred hooks)]")
+outcomes_ll_levels <- c("CPUE (fish/thousand hooks)", "CPUE (mt/thousand hooks)")
+outcomes_ll_logs <- c("Effort [log(fish/thousand hooks)]", "Effort [log(mt/thousand hooks)]")
 
 # PROCESSING ###################################################################
 
@@ -87,24 +87,24 @@ all_ps_logs_es <- list(
 
 # Longline
 all_ll_levels_post <- feols(..ll_levels ~ ..post_twfe | ..fe,
-                            weights = ~hhooks,
+                            weights = ~thooks,
                             data = ll_data,
                             se = "conley") |> 
   set_names(outcomes_ll_levels)
 all_ll_logs_post <- feols(..ll_logs ~ ..post_twfe | ..fe,
-                            weights = ~hhooks,
+                            weights = ~thooks,
                             data = ll_data,
                             se = "conley") |>
   set_names(outcomes_ll_logs)
 
 # Event studies
 all_ll_levels_es <- feols(..ll_levels ~ ..dyn_twfe | ..fe,
-                          weights = ~hhooks,
+                          weights = ~thooks,
                           data = ll_data,
                           se = "conley") |>
   set_names(outcomes_ll_levels)
 all_ll_logs_es <- feols(..ll_logs ~ ..dyn_twfe | ..fe,
-                        weights = ~hhooks,
+                        weights = ~thooks,
                         data = ll_data,
                         se = "conley") |>
   set_names(outcomes_ll_logs)
@@ -121,7 +121,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
   } else if (gear == "ll") {
     inside_data <- data |> 
       filter(if_any(contains(spp), ~ . > 0)) |> 
-      select(id, lon, lat, year, post, near, hhooks, contains(spp))
+      select(id, lon, lat, year, post, near, thooks, contains(spp))
   }
   
   names <- colnames(inside_data)
@@ -160,13 +160,13 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
       if (spec == "post") {
         if (outcome == "levels") {
           model <- feols(..ll_levels ~ ..post_twfe | ..fe,
-                         weights = ~hhooks,
+                         weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
             set_names(outcomes_ll_levels)
         } else if (outcome == "logs") {
           model <- feols(..ll_logs ~ ..post_twfe | ..fe,
-                         weights = ~hhooks,
+                         weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
             set_names(outcomes_ll_logs)
@@ -174,13 +174,13 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
       } else if (spec == "es") {
         if (outcome == "levels") {
           model <- feols(..ll_levels ~ ..dyn_twfe | ..fe,
-                         weights = ~hhooks,
+                         weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
             set_names(outcomes_ll_levels)
         } else if (outcome == "logs") {
           model <- feols(..ll_logs ~ ..dyn_twfe | ..fe,
-                         weights = ~hhooks,
+                         weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
             set_names(outcomes_ll_logs)

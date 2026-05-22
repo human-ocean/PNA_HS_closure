@@ -27,7 +27,7 @@ source(here("scripts/00_config.R"))
 
 ## Load data -------------------------------------------------------------------
 data <- read_rds(file = here("data/processed/h2_panel.rds")) |> 
-  filter(hhooks > 0)
+  filter(thooks > 0)
 
 # ESTIMATION ###################################################################
 
@@ -44,30 +44,30 @@ setFixest_fml(
 
 setFixest_dict(dict = c("post" = "Post"))
 
-outcomes <- c("fish / 100 hooks", "mt / 100 hooks")
+outcomes <- c("fish / 1000 hooks", "mt / 1000 hooks")
 
 ## Estimate --------------------------------------------------------------------
 # 1) For total CPUE
 # Pre/post models
 all_levels_post <- feols(..levels ~ ..post_twfe | ..fe,
-                         weights = ~hhooks,
+                         weights = ~thooks,
                          data = data,
                          se = "conley") |> 
   set_names(outcomes)
 all_logs_post <- feols(..logs ~ ..post_twfe | ..fe,
-                       weights = ~hhooks,
+                       weights = ~thooks,
                        data = data,
                        se = "conley") |> 
   set_names(outcomes)
 
 # Event-study models
 all_levels_es <- feols(..levels ~ ..dyn_twfe | ..fe,
-                     weights = ~hhooks,
+                     weights = ~thooks,
                      data = data,
                      se = "conley") |> 
   set_names(outcomes)
 all_logs_es <- feols(..logs ~ ..dyn_twfe | ..fe,
-                     weights = ~hhooks,
+                     weights = ~thooks,
                      data = data,
                      se = "conley") |> 
   set_names(outcomes)
@@ -79,7 +79,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", data){
   # Filter the data inside
   inside_data <- data |> 
     filter(if_any(contains(spp), ~ . > 0)) |> 
-    select(id, lon, lat, year, post, treated, hhooks, contains(spp))
+    select(id, lon, lat, year, post, treated, thooks, contains(spp))
   
   names <- colnames(inside_data)
   updated_names <- str_replace_all(names, spp, "tot")
@@ -89,24 +89,24 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", data){
   if (spec == "post") {
     if (outcome == "levels") {
       model <- feols(..levels ~ ..post_twfe | ..fe,
-                     weights = ~hhooks,
+                     weights = ~thooks,
                      data = inside_data,
                      se = "conley")
     } else if (outcome == "logs") {
       model <- feols(..logs ~ ..post_twfe | ..fe,
-                     weights = ~hhooks,
+                     weights = ~thooks,
                      data = inside_data,
                      se = "conley")
     }
   } else if (spec == "es") {
     if (outcome == "levels") {
       model <- feols(..levels ~ ..dyn_twfe | ..fe,
-                     weights = ~hhooks,
+                     weights = ~thooks,
                      data = inside_data,
                      se = "conley")
     } else if (outcome == "logs") {
       model <- feols(..logs ~ ..dyn_twfe | ..fe,
-                     weights = ~hhooks,
+                     weights = ~thooks,
                      data = inside_data,
                      se = "conley")
     }
@@ -281,7 +281,7 @@ ts_n <- inside_hs |>
   theme(legend.position = "none") +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (fish / hundred hooks)")
+       y = "CPUE (fish / thousand hooks)")
 
 ts_mt <- inside_hs |> 
   ggplot(aes(x = year, y = cpue_bet_mt)) +
@@ -303,7 +303,7 @@ ts_mt <- inside_hs |>
   theme(legend.position = "none") +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (mt / hundred hooks)")
+       y = "CPUE (mt / thousand hooks)")
 
 bet_raster <- as.raster(
   image_read_svg(here::here("data/raw/fish_pics/BET.svg"), width = 500)
@@ -329,7 +329,7 @@ es_n <- ggiplot(bet_levels_es[[1]],
                 col = bet_color) +
   labs(title = NULL,
        x = "Year",
-       y = "Estimate ± 95% CI\n(fish / hundred hooks)") +
+       y = "Estimate ± 95% CI\n(fish / thousand hooks)") +
   theme_linedraw()
 
 es_mt <- ggiplot(bet_levels_es[[2]],
@@ -338,7 +338,7 @@ es_mt <- ggiplot(bet_levels_es[[2]],
                  pt.pch = 17) +
   labs(title = NULL,
        x = "Year",
-       y = "Estimate ± 95% CI\n(mt / hundred hooks)") +
+       y = "Estimate ± 95% CI\n(mt / thousand hooks)") +
   theme_linedraw()
 
 

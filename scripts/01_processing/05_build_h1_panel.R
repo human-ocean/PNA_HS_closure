@@ -52,7 +52,7 @@ treated_hs_cells <- exact_extract(wcpfc_rast, hs_pocket, include_xy = T) |>
   bind_rows(.id = ) |> 
   as.data.frame() |>  
   rename(lon = x, lat = y) |> 
-  filter(coverage_fraction == 1) |> 
+  filter(coverage_fraction == 1) |>
   select(lon, lat) |> 
   mutate(treated = 1)
 
@@ -67,7 +67,7 @@ control_hs_cells <- exact_extract(wcpfc_rast, wcpfc_hs_area, include_xy = T) |>
   as.data.frame() |>  
   rename(lon = x, lat = y) |> 
   filter(coverage_fraction == 1) |> 
-  anti_join(treated_hs_cells, by = join_by(lon, lat)) |> 
+  anti_join(treated_hs_cells, by = join_by(lon, lat)) |> # Remove cells that are in the pockets
   select(lon, lat) |> 
   mutate(treated = 0)
 
