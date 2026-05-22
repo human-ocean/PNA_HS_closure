@@ -62,9 +62,9 @@ all_logs_post <- feols(..logs ~ ..post_twfe | ..fe,
 
 # Event-study models
 all_levels_es <- feols(..levels ~ ..dyn_twfe | ..fe,
-                     weights = ~thooks,
-                     data = data,
-                     se = "conley") |> 
+                       weights = ~thooks,
+                       data = data,
+                       se = "conley") |> 
   set_names(outcomes)
 all_logs_es <- feols(..logs ~ ..dyn_twfe | ..fe,
                      weights = ~thooks,
@@ -113,7 +113,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", data){
   }
   
   model <- model |> 
-  set_names(outcomes)
+    set_names(outcomes)
   
   return(model)
 }
@@ -161,7 +161,7 @@ rows <- tribble(~term, ~fish, ~mt,
 attr(rows, 'position') <- c(3, 1)
 
 notes <- paste(note_obs, note_fe,
-  paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
+               paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
 notes_main <- paste(notes, note_ybar)
 
 # Needs caption
@@ -370,7 +370,7 @@ coefplot_levels <- coef |>
   geom_hline(yintercept = 0) +
   geom_linerange(aes(ymin = ci_low,
                      ymax = ci_high),
-             linewidth = lw) +
+                 linewidth = lw) +
   geom_point(size = pt_size) +
   scale_color_manual(values = all_spp) +
   facet_wrap(~id, scales = "free") +
@@ -383,7 +383,7 @@ coefplot_logs <- coef |>
   geom_hline(yintercept = 0) +
   geom_linerange(aes(ymin = ci_low,
                      ymax = ci_high),
-             linewidth = lw) +
+                 linewidth = lw) +
   geom_point(size = pt_size) +
   scale_color_manual(values = all_spp) +
   facet_wrap(~id, scales = "free") +
@@ -411,8 +411,8 @@ alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
                   multi_style = "facet", 
                   col = rep(alb_color, 2),
                   pt.pch = 1,
-              facet_args = list(scales = "free_y",
-                                ncol = 2)) +
+                  facet_args = list(scales = "free_y",
+                                    ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Albacore",

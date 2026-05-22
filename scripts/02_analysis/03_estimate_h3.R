@@ -54,10 +54,10 @@ setFixest_fml(
 setFixest_dict(dict = c("post" = "Post"))
 
 outcomes_ps_levels <- c("CPUE (mt/day)", "CPUE (mt/set)")
-outcomes_ps_logs <- c("Effort [log(mt/day)]", "Effort [log(mt/set)]")
+outcomes_ps_logs <- c("CPUE [log(mt/day)]", "CPUE [log(mt/set)]")
 
-outcomes_ll_levels <- c("CPUE (fish/thousand hooks)", "CPUE (mt/thousand hooks)")
-outcomes_ll_logs <- c("Effort [log(fish/thousand hooks)]", "Effort [log(mt/thousand hooks)]")
+outcomes_ll_levels <- c("CPUE (fish/1000 hooks)", "CPUE (mt/1000 hooks)")
+outcomes_ll_logs <- c("CPUE [log(fish/1000 hooks)]", "CPUE [log(mt/1000 hooks)]")
 
 # PROCESSING ###################################################################
 
