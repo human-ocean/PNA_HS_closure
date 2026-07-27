@@ -84,8 +84,8 @@ p <- ggplot(hs_cateogries |> filter (lon > 0),
   labs(fill = "% inside HS pocket",
        color = "Treated",
        subtitle = "Control pixels in the Western hemisphere not shown")
-# ------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
 h2_panel <- wcpfc_sf |> 
   st_drop_geometry() |> 
   inner_join(hs_cateogries, by = join_by(lon, lat)) |> 
