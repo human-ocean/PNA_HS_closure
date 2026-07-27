@@ -43,9 +43,9 @@ lw <- 0.3
 pt_size <- 2
 
 # Table note building blocks ---------------------------------------------------
-note_obs <- "The unit of observation is a grid cell by year."
+note_obs <- "The unit of observation is a grid cell in a given year."
 note_fe  <- "All model specifications include fixed effects by year and grid cell."
-note_ybar <- "$\\\\bar{Y}_{pre}$ indicates the mean of each outcome variable in the pre-closure period."
+note_ybar <- "$\\\\bar{Y}_{pre}$ indicates the mean of each outcome variable over the pre-closure period."
 
 # Helper functions -------------------------------------------------------------
 make_small <- function(path) {

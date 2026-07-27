@@ -1,12 +1,12 @@
 ################################################################################
-# title
+# H1 Test: Decrease in fishing effort
 ################################################################################
 #
 # Juan Carlos Villaseñor-Derbez
 # jc_villasenor@miami.edu
-# date
+# July 24, 2026
 #
-# Description
+# Description: Tests whether fishing effort within the high seas was elliminated
 #
 ################################################################################
   
@@ -148,15 +148,15 @@ rows <- tribble(~term, ~days, ~sets,
 attr(rows, 'position') <- c(3, 1)
 
 notes <- paste(note_obs, note_fe,
-  paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
+  paste0("Numbers in parentheses are Conley standard errors using a ", se_dist, " radius."))
 notes_main <- paste(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
 modelsummary(post_lev_twfe,
-             title = "\\label{tab:h1}Coefficient estimates for change in fishing effort inside
-             the high seas pocket after the closure, relative to changes in fishing effort
-             observed for other high seas areas in the WCPFC convention area.",
+             title = "\\label{tab:h1}Coefficient estimates for the change in fishing effort inside
+             the high seas pockets after the closure, relative to changes in fishing effort
+             observed for other comparable high seas areas in the WCPFC convention area.",
              stars = tab_stars,
              gof_omit = gof_omit,
              coef_map = coef,
