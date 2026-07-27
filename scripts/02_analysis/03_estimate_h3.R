@@ -191,7 +191,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
 }
 
 ## For purse seine -------------------------------------------------------------
-# 1) Bigeye Tuna
+# 1) bigeye Tuna
 # Pre/post models
 bet_ps_levels_post <- fit_spp(spp = "bet", outcome = "levels", data = ps_data)
 bet_ps_logs_post <- fit_spp(spp = "bet", outcome = "logs", data = ps_data)
@@ -207,7 +207,7 @@ skj_ps_logs_post <- fit_spp(spp = "skj", outcome = "logs", data = ps_data)
 skj_ps_levels_es <- fit_spp(spp = "skj", spec = "es", outcome = "levels", data = ps_data)
 skj_ps_logs_es <- fit_spp(spp = "skj", spec = "es", outcome = "logs", data = ps_data)
 
-# 3) For Yellowfin Tuna
+# 3) For yellowfin Tuna
 # Pre/post models
 yft_ps_levels_post <- fit_spp(spp = "yft", outcome = "levels", data = ps_data)
 yft_ps_logs_post <- fit_spp(spp = "yft", outcome = "logs", data = ps_data)
@@ -217,7 +217,7 @@ yft_ps_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = ps_
 
 
 ## For longline ----------------------------------------------------------------
-# 1) For Albacore
+# 1) For albacore
 # Pre/post models
 alb_ll_levels_post <- fit_spp(spp = "alb", outcome = "levels", gear = "ll", data = ll_data)
 alb_ll_logs_post <- fit_spp(spp = "alb", outcome = "logs", gear = "ll", data = ll_data)
@@ -225,7 +225,7 @@ alb_ll_logs_post <- fit_spp(spp = "alb", outcome = "logs", gear = "ll", data = l
 alb_ll_levels_es <- fit_spp(spp = "alb", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
 alb_ll_logs_es <- fit_spp(spp = "alb", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
 
-# 2) Bigeye Tuna
+# 2) bigeye Tuna
 # Pre/post models
 bet_ll_levels_post <- fit_spp(spp = "bet", outcome = "levels", gear = "ll", data = ll_data)
 bet_ll_logs_post <- fit_spp(spp = "bet", outcome = "logs", gear = "ll", data = ll_data)
@@ -233,7 +233,7 @@ bet_ll_logs_post <- fit_spp(spp = "bet", outcome = "logs", gear = "ll", data = l
 bet_ll_levels_es <- fit_spp(spp = "bet", spec = "es", outcome = "levels", gear = "ll", data = ll_data)
 bet_ll_logs_es <- fit_spp(spp = "bet", spec = "es", outcome = "logs", gear = "ll", data = ll_data)
 
-# 3) For Yellowfin Tuna
+# 3) For yellowfin Tuna
 # Pre/post models
 yft_ll_levels_post <- fit_spp(spp = "yft", outcome = "levels", gear = "ll", data = ll_data)
 yft_ll_logs_post <- fit_spp(spp = "yft", outcome = "logs", gear = "ll", data = ll_data)
@@ -268,8 +268,8 @@ notes_main <- paste(notes, note_ybar)
 # Needs caption
 # Needs mean of Y in pre-treatment period
 modelsummary(skj_ps_levels_post,
-             title = "\\label{tab:h3}Coefficient estimates for change in Skipjack tuna CPUE in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in Bigeye tuna CPUE
+             title = "\\label{tab:h3}Coefficient estimates for change in skipjack tuna CPUE in
+             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in bigeye tuna CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.",
              stars = tab_stars,
              gof_omit = gof_omit,
@@ -297,7 +297,7 @@ wrap_notes(here("content", "tab", "h3_reg_all_ps.tex"))
 
 msummary(list("A) Levels" = bet_ps_levels_post,
               "B) Log-transformed" = bet_ps_logs_post),
-         title = "Change in CPUE for Bigeye tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
+         title = "Change in CPUE for bigeye tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -310,7 +310,7 @@ wrap_notes(here("content", "tab", "h3_reg_bet_ps.tex"))
 
 msummary(list("A) Levels" = skj_ps_levels_post,
               "B) Log-transformed" = skj_ps_logs_post),
-         title = "Change in CPUE for Skipjack tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
+         title = "Change in CPUE for skipjack tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -323,7 +323,7 @@ wrap_notes(here("content", "tab", "h3_reg_skj_ps.tex"))
 
 msummary(list("A) Levels" = yft_ps_levels_post,
               "B) Log-transformed" = yft_ps_logs_post),
-         title = "Change in CPUE for Yellowfin tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
+         title = "Change in CPUE for yellowfin tuna caught by the purse seine fleet within 100 nm of the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -350,7 +350,7 @@ wrap_notes(here("content", "tab", "h3_reg_all_ll.tex"))
 
 msummary(list("A) Levels" = alb_ll_levels_post,
               "B) Log-transformed" = alb_ll_logs_post),
-         title = "Change in CPUE for Albacore tuna caught by the longline fleet within 100 nm of the high seas pockets",
+         title = "Change in CPUE for albacore tuna caught by the longline fleet within 100 nm of the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -363,7 +363,7 @@ wrap_notes(here("content", "tab", "h3_reg_alb_ll.tex"))
 
 msummary(list("A) Levels" = bet_ll_levels_post,
               "B) Log-transformed" = bet_ll_logs_post),
-         title = "Change in CPUE for Bigeye tuna caught by the longline fleet within 100 nm of the high seas pockets",
+         title = "Change in CPUE for bigeye tuna caught by the longline fleet within 100 nm of the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -376,7 +376,7 @@ wrap_notes(here("content", "tab", "h3_reg_bet_ll.tex"))
 
 msummary(list("A) Levels" = yft_ll_levels_post,
               "B) Log-transformed" = yft_ll_logs_post),
-         title = "Change in CPUE for Yellowfin tuna caught by the longline fleet within 100 nm of the high seas pockets",
+         title = "Change in CPUE for yellowfin tuna caught by the longline fleet within 100 nm of the high seas pockets",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -530,7 +530,7 @@ bet_ps_es <- ggiplot(c(bet_ps_levels_es, bet_ps_logs_es),
                                        ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
-  labs(title = "Bigeye (purse seine)",
+  labs(title = "bigeye (purse seine)",
        x = "Year")
 
 skj_ps_es <- ggiplot(c(skj_ps_levels_es, skj_ps_logs_es),
@@ -542,7 +542,7 @@ skj_ps_es <- ggiplot(c(skj_ps_levels_es, skj_ps_logs_es),
                                        ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
-  labs(title = "Skipjack (purse seine)",
+  labs(title = "skipjack (purse seine)",
        x = "Year")
 
 yft_ps_es <- ggiplot(c(yft_ps_levels_es, yft_ps_logs_es),
@@ -554,7 +554,7 @@ yft_ps_es <- ggiplot(c(yft_ps_levels_es, yft_ps_logs_es),
                                        ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
-  labs(title = "Yellowfin (purse seine)",
+  labs(title = "yellowfin (purse seine)",
        x = "Year")
 
 # Longline
@@ -579,7 +579,7 @@ alb_ll_es <- ggiplot(list(alb_ll_levels_es, alb_ll_logs_es),
                                        ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
-  labs(title = "Albacore (longline)",
+  labs(title = "albacore (longline)",
        x = "Year")
 
 bet_ll_es <- ggiplot(list(bet_ll_levels_es, bet_ll_logs_es),
@@ -591,7 +591,7 @@ bet_ll_es <- ggiplot(list(bet_ll_levels_es, bet_ll_logs_es),
                                        ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
-  labs(title = "Bigeye (longline)",
+  labs(title = "bigeye (longline)",
        x = "Year")
 
 yft_ll_es <- ggiplot(list(yft_ll_levels_es, yft_ll_logs_es),
@@ -603,7 +603,7 @@ yft_ll_es <- ggiplot(list(yft_ll_levels_es, yft_ll_logs_es),
                                        ncol = 2)) +
   theme_linedraw() +
   theme(legend.position = "none") +
-  labs(title = "Yellowfin (longline)",
+  labs(title = "yellowfin (longline)",
        x = "Year")
 
 ## Save event-study figures ----------------------------------------------------
