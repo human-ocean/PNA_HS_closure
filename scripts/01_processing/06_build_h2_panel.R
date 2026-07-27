@@ -58,14 +58,13 @@ treated_hs_cells <- exact_extract(wcpfc_rast, hs_pocket, include_xy = T) |>
 # Step 3) Find control cells: The ones that are entirely within the high seas
 # First get a high seas area that matches the convention?
 sf_use_s2(F)
-wcpfc_hs_area <- hs |> 
+wcpfc_hs_area <- hs |>
   st_intersection(wcpfc)
 sf_use_s2(T)
 
-control_hs_cells <- exact_extract(wcpfc_rast, wcpfc_hs_area, include_xy = T) |> 
+control_hs_cells <- exact_extract(wcpfc_rast, wcpfc, include_xy = T) |> 
   as.data.frame() |>  
   rename(lon = x, lat = y) |> 
-  # filter(coverage_fraction == 1) |> 
   anti_join(treated_hs_cells, by = join_by(lon, lat)) |> 
   select(lon, lat, coverage_fraction) |> 
   mutate(treated = 0)
@@ -86,7 +85,6 @@ p <- ggplot(hs_cateogries |> filter (lon > 0),
        color = "Treated",
        subtitle = "Control pixels in the Western hemisphere not shown")
 # ------------------------------------------------------------------------------
-
 
 h2_panel <- wcpfc_sf |> 
   st_drop_geometry() |> 
