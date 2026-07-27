@@ -167,8 +167,8 @@ notes_main <- paste(notes, note_ybar)
 # Needs caption
 # Needs mean of Y in pre-treatment period
 modelsummary(bet_levels_post,
-             title = "\\label{tab:h2}Coefficient estimates for change in Bigeye tuna CPUE in
-             the high seas pocket after the closure, relative to changes in Bigeye tuna CPUE
+             title = "\\label{tab:h2}Coefficient estimates for change in bigeye tuna CPUE in
+             the high seas pockets after the closure, relative to changes in bigeye tuna CPUE
              observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area.",
              stars = tab_stars,
              gof_omit = gof_omit,
@@ -184,7 +184,7 @@ wrap_notes(here("content/tab/h2_reg.tex"))
 # Set defaults
 msummary(list("A) Levels" = all_levels_post,
               "B) Log-transformed" = all_logs_post),
-         title = "Change in CPUE for all tuna species caught by the longline fleet in the high seas pockets",
+         title = "\\label{tab:h2_reg_all}Change in CPUE for all tuna species caught by the longline fleet in the high seas pockets.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -197,7 +197,7 @@ wrap_notes(here("content", "tab", "h2_reg_all.tex"))
 
 msummary(list("A) Levels" = alb_levels_post,
               "B) Log-transformed" = alb_logs_post),
-         title = "Change in CPUE for Albacore tuna caught by the longline fleet in the high seas pockets",
+         title = "\\label{tab:h2_reg_alb}Change in CPUE for Albacore tuna caught by the longline fleet in the high seas pockets.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -210,7 +210,7 @@ wrap_notes(here("content", "tab", "h2_reg_alb.tex"))
 
 msummary(list("A) Levels" = bet_levels_post,
               "B) Log-transformed" = bet_logs_post),
-         title = "Change in CPUE for Bigeye tuna caught by the longline fleet in the high seas pockets",
+         title = "\\label{tab:h2_reg_bet}Change in CPUE for Bigeye tuna caught by the longline fleet in the high seas pockets.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -223,7 +223,7 @@ wrap_notes(here("content", "tab", "h2_reg_bet.tex"))
 
 msummary(list("A) Levels" = yft_levels_post,
               "B) Log-transformed" = yft_logs_post),
-         title = "Change in CPUE for Yellowfin tuna caught by the longline fleet in the high seas pockets",
+         title = "\\label{tab:h2_reg_yft}Change in CPUE for Yellowfin tuna caught by the longline fleet in the high seas pockets.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -258,47 +258,66 @@ data |>
 ## Plots for main text ---------------------------------------------------------
 # This will be a 4-panel figure. Each column is CPUE in different units.
 # Top row is raw CPUE time series and bottom row are event-studies
+pos <- position_dodge(width = 0.5)
 
-inside_hs <- data |> 
-  filter(treated == 1)
-
-ts_n <- inside_hs |> 
-  ggplot(aes(x = year, y = cpue_bet_n)) +
+ts_n <- ggplot(data,
+               aes(x = year, y = cpue_bet_n, group = treated, linetype = group)) +
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  stat_summary(geom = "line", fun = "mean",
-               linetype = "dashed",
-               color = bet_color) +
-  stat_summary(geom = "linerange", 
+  stat_summary(geom = "line",
+               fun = "mean",
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "linerange", 
+               linetype = "solid",
                fun.data = "mean_cl_normal",
                linewidth = 0.5,
-               color = bet_color) +
-  stat_summary(geom = "point", fun = "mean",
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "point",
+               fun = "mean",
                size = pt_size,
-               color = bet_color) +
+               color = bet_color,
+               position = pos) +
+  scale_linetype_manual(values = c("Control" = "dashed",
+                                   "Treatment" = "solid")) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "inside",
+        legend.position.inside = c(1, 1),
+        legend.justification.inside = c(1, 1),
+        legend.background = element_blank()) +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (fish / thousand hooks)")
+       y = "CPUE (fish / thousand hooks)",
+       linetype = "Treatment")
 
-ts_mt <- inside_hs |> 
-  ggplot(aes(x = year, y = cpue_bet_mt)) +
+ts_mt <- ggplot(data = data,
+                aes(x = year, y = cpue_bet_mt, group = treated, linetype = group)) +
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  stat_summary(geom = "line", fun = "mean",
-               linetype = "dashed",
-               color = bet_color) +
-  stat_summary(geom = "linerange", 
+  stat_summary(geom = "line",
+               fun = "mean",
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "linerange", 
+               linetype = "solid",
                fun.data = "mean_cl_normal",
                linewidth = 0.5,
-               color = bet_color) +
-  stat_summary(geom = "point", fun = "mean",
-               pch = 17,
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "point",
+               fun = "mean",
                size = pt_size,
-               color = bet_color) +
+               color = bet_color,
+               position = pos) +
+  scale_linetype_manual(values = c("Control" = "dashed",
+                                   "Treatment" = "solid")) +
   theme_linedraw() +
   theme(legend.position = "none") +
   guides(fill = "none") +
