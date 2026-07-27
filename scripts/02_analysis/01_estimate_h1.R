@@ -173,7 +173,8 @@ modelsummary(models = list("A) Levels" = post_lev,
              stars = tab_stars,
              gof_omit = gof_omit,
              coef_map = coef,
-             notes = notes,
+             notes = paste(note_obs, 
+                           paste0("Numbers in parentheses are Conley standard errors using a ", se_dist, " radius.")),
              escape = F,
              output = here("content/tab/h1_reg_self.tex"))
 make_small(here("content/tab/h1_reg_self.tex"))
