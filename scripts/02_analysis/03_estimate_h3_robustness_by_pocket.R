@@ -2,8 +2,8 @@
 # H3 Robustness: Spillover effects split by high seas pocket
 ################################################################################
 #
-# Your Name Here
-# Your email here
+# Juan Carlos Villaseñor-Derbez
+# jxv893@miami.edu
 # 2026-05-20
 #
 # Robustness check for Hypothesis 3 (spillover effects). Re-estimates the main
@@ -122,8 +122,8 @@ modelsummary(
   list("A) CPUE (mt/day)" = skj_days_post,
        "B) CPUE (mt/set)" = skj_sets_post),
   title = paste(
-    "\\label{tab:h3_rob_pocket}Robustness check: Coefficient estimates for the change in",
-    "Skipjack tuna CPUE in areas within 100 nautical miles of the high seas pocket after",
+    "\\label{tab:h3_rob_pocket}Robustness check: Coefficient estimates for change in",
+    "skipjack tuna CPUE in areas within 100 nautical miles of each high seas pocket after",
     "the closure, estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)",
     "and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$)."
   ),
