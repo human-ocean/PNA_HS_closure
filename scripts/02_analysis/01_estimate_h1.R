@@ -168,7 +168,7 @@ wrap_notes(here("content/tab/h1_reg.tex"))
 
 modelsummary(models = list("A) Levels" = post_lev,
                            "B) Inverse-hyperbolic sine transformation" = post_ihs),
-             title = "\\label{tab:h1_self}Change in fishing effort inside the high seas pockets",
+             title = "\\label{tab:h1_self}Change in fishing effort inside the high seas pockets.",
              shape = "rbind",
              stars = tab_stars,
              gof_omit = gof_omit,
@@ -182,7 +182,7 @@ wrap_notes(here("content/tab/h1_reg_self.tex"))
 
 modelsummary(models = list("A) Levels" = post_lev_twfe,
                            "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
-             title = "\\label{tab:h1_twfe}Change in fishing effort inside the high seas pockets relative to other high seas areas",
+             title = "\\label{tab:h1_twfe}Change in fishing effort inside the high seas pockets relative to other high seas areas.",
              shape = "rbind",
              stars = tab_stars,
              gof_omit = gof_omit,
