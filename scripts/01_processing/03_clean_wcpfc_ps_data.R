@@ -46,6 +46,10 @@ ps_tuna_clean <- wcpfc |>
   # Remove cells with no catch info
   filter(tot_mt > 0) |>
   select(year, lat, lon, days, num_sets, contains("_mt")) |>
+  # Calculate total catch and effort by year and pixel (to sum across set types)
+  group_by(year, lat, lon) |> 
+  summarize_all("sum", na.rm = T) |>
+  ungroup() |> 
   # Balance the panel
   complete(year, nesting(lon, lat), fill = list(days = 0,
                                                 num_sets = 0,

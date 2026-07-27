@@ -45,6 +45,10 @@ ll_tuna_clean <- wcpfc_ll |>
   filter(tot_mt > 0 & tot_n > 0) |>
   select(year, lat, lon, thooks, contains("_mt"), contains("_n"),
          -c("mls_n", "blm_n", "bum_n", "swo_n", "oth_n")) |>
+  # Calculate total catch and effort by year and pixel (to sum across set types)
+  group_by(year, lat, lon) |> 
+  summarize_all("sum", na.rm = T) |>
+  ungroup() |> 
   complete(year, nesting(lon, lat), fill = list(hhooks = 0,
                                                 alb_mt = 0,
                                                 yft_mt = 0,
