@@ -61,40 +61,60 @@ bet_data <- data |>
   select(id, lon, lat, year, post, treated, pocket, thooks,
          cpue_tot_n = cpue_bet_n,
          cpue_tot_mt = cpue_bet_mt)
+
 ## Post-treatment models (split by pocket) -------------------------------------
-bet_levels_post_hsp1 <- feols(..levels ~ ..post_twfe | ..fe,
+bet_levels_post <- feols(..levels ~ ..post_twfe | ..fe,
                          weights = ~thooks,
-                         subset = ~(treated == 0 | (treated == 1 & pocket == "HSP1")),
                          data = bet_data,
-                         se = "conley")
+                         se = "conley") |> 
+  set_names(outcomes)
+
+bet_levels_post_hsp1 <- feols(..levels ~ ..post_twfe | ..fe,
+                              weights = ~thooks,
+                              subset = ~(treated == 0 | (treated == 1 & pocket == "HSP1")),
+                              data = bet_data,
+                              se = "conley") |> 
+  set_names(outcomes)
 
 bet_levels_post_hsp2 <- feols(..levels ~ ..post_twfe | ..fe,
                               weights = ~thooks,
                               subset = ~(treated == 0 | (treated == 1 & pocket == "HSP2")),
                               data = bet_data,
-                              se = "conley")
+                              se = "conley") |> 
+  set_names(outcomes)
 
-## Event-study models (split by pocket) ----------------------------------------
-bet_levels_es_hsp1 <- feols(..levels ~ ..dyn_twfe | ..fe,
-                       weights = ~thooks,
-                       subset = ~(treated == 0 | (treated == 1 & pocket == "HSP2")),
-                       data = bet_data,
-                       se = "conley")
-bet_levels_es_hsp2 <- feols(..levels ~ ..dyn_twfe | ..fe,
-                       weights = ~thooks,
-                       subset = ~(treated == 0 | (treated == 1 & pocket == "HSP2")),
-                       data = bet_data,
-                       se = "conley")
 # BUILD CONTENTS ###############################################################
 
 ## Regression tables ------------------------------------------------------------
-# Build a table where I can compare full sample (left) vs Pocket 2 only (right) 
-# for both metrics (top and bottom).
+coef <- c("post" = "Post",
+          "post:treated" = "Post x Treated")
 
-## Event-study plots -----------------------------------------------------------
+se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "type"), "[:digit:]+km")
 
+notes <- paste(note_obs, note_fe,
+               paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
 
-# EXPORT #######################################################################
-
-## The final step --------------------------------------------------------------
-  
+modelsummary(
+  list("A) CPUE (fish / 1000 hooks)" = c(bet_levels_post[1],
+                                         bet_levels_post_hsp1[1],
+                                         bet_levels_post_hsp2[1]) |> 
+         set_names("sample: Full sample", "sample: HSP1", "sample: HSP2"),
+       "B) CPUE (mt / 1000 hooks)" = c(bet_levels_post[2],
+                                       bet_levels_post_hsp1[2],
+                                       bet_levels_post_hsp2[2]) |> 
+         set_names("sample: Full sample", "sample: HSP1", "sample: HSP2")),
+  title = "\\label{tab:h2_rob_pocket_bet_ll}Coefficient estimates for change in bigeye tuna CPUE in
+  the high seas pockets after the closure, relative to changes in bigeye tuna CPUE
+  observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area,
+  estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
+  and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$). The first column shows our main
+  text estimates as in \\autoref{tab:h2}.",
+  shape = "rbind",
+  stars = tab_stars,
+  gof_omit = gof_omit,
+  coef_map = coef,
+  notes = notes,
+  escape = F,
+  output = here("content/tab/h2_rob_pocket_bet_ll.tex"))
+make_small(here("content", "tab", "h2_rob_pocket_bet_ll.tex"))
+wrap_notes(here("content", "tab", "h2_rob_pocket_bet_ll.tex"))
