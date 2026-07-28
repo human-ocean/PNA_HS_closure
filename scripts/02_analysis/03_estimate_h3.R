@@ -439,43 +439,70 @@ ll_data |>
 
 # FIGURES ######################################################################
 ## Main text figures -----------------------------------------------------------
-ts_days <- ggplot(data = skj_data,
-               mapping = aes(x = year, y = cpue_skj_days)) +
+pos <- position_dodge(width = 0.5)
+
+skj_data <- skj_data |>
+  mutate(group = if_else(near == 1, "Treatment", "Control"))
+
+ts_days <- ggplot(skj_data,
+               aes(x = year, y = cpue_skj_days, group = near, linetype = group)) +
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  stat_summary(geom = "line", fun = "mean",
-               linetype = "dashed",
-               color = skj_color) +
-  stat_summary(geom = "linerange", 
+  stat_summary(geom = "line",
+               fun = "mean",
+               color = skj_color,
+               position = pos) +
+  stat_summary(aes(group = near),
+               geom = "linerange", 
+               linetype = "solid",
                fun.data = "mean_cl_normal",
                linewidth = 0.5,
-               color = skj_color) +
-  stat_summary(geom = "point", fun = "mean",
+               color = skj_color,
+               position = pos) +
+  stat_summary(aes(group = near),
+               geom = "point",
+               fun = "mean",
                size = pt_size,
-               color = skj_color) +
+               color = skj_color,
+               position = pos) +
+  scale_linetype_manual(values = c("Control" = "dashed",
+                                   "Treatment" = "solid")) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0, 1),
+        legend.justification.inside = c(0, 1),
+        legend.background = element_blank()) +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (mt/day)")
+       y = "CPUE (mt/day)",
+       linetype = "Treatment")
 
-ts_sets <- ggplot(data = skj_data,
-               mapping = aes(x = year, y = cpue_skj_sets)) +
+ts_sets <- ggplot(skj_data,
+               aes(x = year, y = cpue_skj_sets, group = near, linetype = group)) +
   geom_vline(xintercept = 2009.5,
              linetype = "dashed",
              linewidth = lw) +
-  stat_summary(geom = "line", fun = "mean",
-               linetype = "dashed",
-               color = skj_color) +
-  stat_summary(geom = "linerange", 
+  stat_summary(geom = "line",
+               fun = "mean",
+               color = skj_color,
+               position = pos) +
+  stat_summary(aes(group = near),
+               geom = "linerange", 
+               linetype = "solid",
                fun.data = "mean_cl_normal",
                linewidth = 0.5,
-               color = skj_color) +
-  stat_summary(geom = "point", fun = "mean",
+               color = skj_color,
+               position = pos) +
+  stat_summary(aes(group = near),
+               geom = "point",
+               fun = "mean",
                size = pt_size,
                pch = 17,
-               color = skj_color) +
+               color = skj_color,
+               position = pos) +
+  scale_linetype_manual(values = c("Control" = "dashed",
+                                   "Treatment" = "solid")) +
   theme_linedraw() +
   theme(legend.position = "none") +
   guides(fill = "none") +
