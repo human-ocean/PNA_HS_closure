@@ -167,9 +167,10 @@ notes_main <- paste(notes, note_ybar)
 # Needs caption
 # Needs mean of Y in pre-treatment period
 modelsummary(bet_levels_post,
-             title = "\\label{tab:h2}Coefficient estimates for change in bigeye tuna CPUE in
-             the high seas pockets after the closure, relative to changes in bigeye tuna CPUE
-             observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area.",
+             title = "\\label{tab:h2}Coefficient estimates for change in bigeye
+             tuna CPUE caught by the longline fleet in the high seas pockets after
+             the closure, relative to changes in CPUE observed for other tropical
+             (20°S - 20°N) high seas areas in the WCPFC convention area.",
              stars = tab_stars,
              gof_omit = gof_omit,
              coef_map = coef,
@@ -184,7 +185,13 @@ wrap_notes(here("content/tab/h2_reg.tex"))
 # Set defaults
 msummary(list("A) Levels" = all_levels_post,
               "B) Log-transformed" = all_logs_post),
-         title = "\\label{tab:h2_reg_all}Change in CPUE for all tuna species caught by the longline fleet in the high seas pockets.",
+         title = "\\label{tab:h2_reg_all}Coefficient estimates for change in all
+             tuna CPUE caught by the longline fleet in the high seas pockets after
+             the closure, relative to changes in CPUE observed for other tropical
+             (20°S - 20°N) high seas areas in the WCPFC convention area.
+             Panel A presents results in levels. Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -197,7 +204,13 @@ wrap_notes(here("content", "tab", "h2_reg_all.tex"))
 
 msummary(list("A) Levels" = alb_levels_post,
               "B) Log-transformed" = alb_logs_post),
-         title = "\\label{tab:h2_reg_alb}Change in CPUE for Albacore tuna caught by the longline fleet in the high seas pockets.",
+         title = "\\label{tab:h2_reg_alb}Coefficient estimates for change in albacore
+             tuna CPUE caught by the longline fleet in the high seas pockets after
+             the closure, relative to changes in CPUE observed for other tropical
+             (20°S - 20°N) high seas areas in the WCPFC convention area.
+             Panel A presents results in levels. Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -210,7 +223,14 @@ wrap_notes(here("content", "tab", "h2_reg_alb.tex"))
 
 msummary(list("A) Levels" = bet_levels_post,
               "B) Log-transformed" = bet_logs_post),
-         title = "\\label{tab:h2_reg_bet}Change in CPUE for Bigeye tuna caught by the longline fleet in the high seas pockets.",
+         title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in all
+             tuna CPUE caught by the longline fleet in the high seas pockets after
+             the closure, relative to changes in CPUE observed for other tropical
+             (20°S - 20°N) high seas areas in the WCPFC convention area.
+             Panel A presents results in levels (same as in \\autoref{tab:h2}).
+             Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -223,7 +243,13 @@ wrap_notes(here("content", "tab", "h2_reg_bet.tex"))
 
 msummary(list("A) Levels" = yft_levels_post,
               "B) Log-transformed" = yft_logs_post),
-         title = "\\label{tab:h2_reg_yft}Change in CPUE for Yellowfin tuna caught by the longline fleet in the high seas pockets.",
+         title = "\\label{tab:h2_reg_yft}Coefficient estimates for change in yellowfin
+             tuna CPUE caught by the longline fleet in the high seas pockets after
+             the closure, relative to changes in CPUE observed for other tropical
+             (20°S - 20°N) high seas areas in the WCPFC convention area.
+             Panel A presents results in levels. Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
