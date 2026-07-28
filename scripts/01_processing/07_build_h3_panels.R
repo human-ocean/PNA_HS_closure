@@ -95,7 +95,7 @@ ll_fishable_cells <- exact_extract(ll_wcpfc_rast,
 
 ## Step 2) Assign treatment group to grid cells --------------------------------
 ps_h3_ps_panel <- ps_wcpfc_sf |> 
-  st_filter(c(hs_pocket, eezs)) |>
+  st_filter(c(hs_pocket, eezs)) |> # For purse seine, we make sure they are within PNA eezs
   st_join(zones) |> 
   st_drop_geometry() |> 
   drop_na(zone) |> 
