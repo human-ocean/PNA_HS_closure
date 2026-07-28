@@ -53,11 +53,9 @@ setFixest_fml(
 
 setFixest_dict(dict = c("post" = "Post"))
 
-outcomes_ps_levels <- c("CPUE (mt/day)", "CPUE (mt/set)")
-outcomes_ps_logs <- c("CPUE [log(mt/day)]", "CPUE [log(mt/set)]")
+outcomes_ps <- c("CPUE (mt/day)", "CPUE (mt/set)")
 
-outcomes_ll_levels <- c("CPUE (fish/1000 hooks)", "CPUE (mt/1000 hooks)")
-outcomes_ll_logs <- c("CPUE [log(fish/1000 hooks)]", "CPUE [log(mt/1000 hooks)]")
+outcomes_ll <- c("CPUE (fish/1000 hooks)", "CPUE (mt/1000 hooks)")
 
 # PROCESSING ###################################################################
 
@@ -67,47 +65,47 @@ outcomes_ll_logs <- c("CPUE [log(fish/1000 hooks)]", "CPUE [log(mt/1000 hooks)]"
 all_ps_levels_post <- list(
   feols(cpue_tot_days ~ ..post_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
   feols(cpue_tot_sets ~ ..post_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps_levels)
+) |> set_names(outcomes_ps)
 
 all_ps_logs_post <- list(
   feols(log(cpue_tot_days) ~ ..post_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
   feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps_logs)
+) |> set_names(outcomes_ps)
 
 # Event studies
 all_ps_levels_es <- list(
   feols(cpue_tot_days ~ ..dyn_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
   feols(cpue_tot_sets ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps_levels)
+) |> set_names(outcomes_ps)
 
 all_ps_logs_es <- list(
   feols(log(cpue_tot_days) ~ ..dyn_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
   feols(log(cpue_tot_sets) ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps_logs)
+) |> set_names(outcomes_ps)
 
 # Longline
 all_ll_levels_post <- feols(..ll_levels ~ ..post_twfe | ..fe,
                             weights = ~thooks,
                             data = ll_data,
                             se = "conley") |> 
-  set_names(outcomes_ll_levels)
+  set_names(outcomes_ll)
 all_ll_logs_post <- feols(..ll_logs ~ ..post_twfe | ..fe,
                             weights = ~thooks,
                             data = ll_data,
                             se = "conley") |>
-  set_names(outcomes_ll_logs)
+  set_names(outcomes_ll)
 
 # Event studies
 all_ll_levels_es <- feols(..ll_levels ~ ..dyn_twfe | ..fe,
                           weights = ~thooks,
                           data = ll_data,
                           se = "conley") |>
-  set_names(outcomes_ll_levels)
+  set_names(outcomes_ll)
 all_ll_logs_es <- feols(..ll_logs ~ ..dyn_twfe | ..fe,
                         weights = ~thooks,
                         data = ll_data,
                         se = "conley") |>
-  set_names(outcomes_ll_logs)
+  set_names(outcomes_ll)
 
 
 ## Species-level regressions ---------------------------------------------------
@@ -135,24 +133,24 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
         model <- list(
           feols(cpue_tot_days ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
           feols(cpue_tot_sets ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps_levels)
+        ) |> set_names(outcomes_ps)
       } else if (outcome == "logs") {
         model <- list(
           feols(log(cpue_tot_days) ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
           feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps_logs)
+        ) |> set_names(outcomes_ps)
       }
     } else if (spec == "es") {
       if (outcome == "levels") {
         model <- list(
           feols(cpue_tot_days ~ ..dyn_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
           feols(cpue_tot_sets ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps_levels)
+        ) |> set_names(outcomes_ps)
       } else if (outcome == "logs") {
         model <- list(
           feols(log(cpue_tot_days) ~ ..dyn_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
           feols(log(cpue_tot_sets) ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps_logs)
+        ) |> set_names(outcomes_ps)
       }
     }
     } else if (gear == "ll") {
@@ -163,13 +161,13 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
                          weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
-            set_names(outcomes_ll_levels)
+            set_names(outcomes_ll)
         } else if (outcome == "logs") {
           model <- feols(..ll_logs ~ ..post_twfe | ..fe,
                          weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
-            set_names(outcomes_ll_logs)
+            set_names(outcomes_ll)
         }
       } else if (spec == "es") {
         if (outcome == "levels") {
@@ -177,13 +175,13 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
                          weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
-            set_names(outcomes_ll_levels)
+            set_names(outcomes_ll)
         } else if (outcome == "logs") {
           model <- feols(..ll_logs ~ ..dyn_twfe | ..fe,
                          weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
-            set_names(outcomes_ll_logs)
+            set_names(outcomes_ll)
         }
       }
     }
