@@ -91,48 +91,25 @@ skj_sets_es <- feols(cpue_tot_sets ~ ..dyn_twfe | ..fe,
 ## Regression table ------------------------------------------------------------
 coef <- c("post" = "Post",
           "post:near" = "Post x Near")
-
 se_dist <- str_extract(attr(skj_days_post[[1]]$se, "type"), "[:digit:]+km")
-
-# Pre-treatment means in the near zone, computed separately for each pocket
-# and each outcome to populate the add_rows Ybar_pre row per panel
-mean_days_full <- mean(skj_data$cpue_tot_days[skj_data$post == 0 & skj_data$near == 1])
-mean_days_hsp1 <- mean(skj_data$cpue_tot_days[skj_data$post == 0 & skj_data$near == 1 & skj_data$pocket == "HSP1"])
-mean_days_hsp2 <- mean(skj_data$cpue_tot_days[skj_data$post == 0 & skj_data$near == 1 & skj_data$pocket == "HSP2"])
-
-mean_sets_full <- mean(skj_data$cpue_tot_sets[skj_data$post == 0 & skj_data$near == 1])
-mean_sets_hsp1 <- mean(skj_data$cpue_tot_sets[skj_data$post == 0 & skj_data$near == 1 & skj_data$pocket == "HSP1"])
-mean_sets_hsp2 <- mean(skj_data$cpue_tot_sets[skj_data$post == 0 & skj_data$near == 1 & skj_data$pocket == "HSP2"])
-
-# One add_rows row per panel (A: days, B: sets); position = c(3, 3) inserts
-# each row at position 3 in its respective panel's GOF section
-rows <- tribble(
-  ~term,               ~full,           ~hsp1,           ~hsp2,
-  '$\\bar{Y}_{pre}$',  mean_days_full,  mean_days_hsp1,  mean_days_hsp2,
-  '$\\bar{Y}_{pre}$',  mean_sets_full,  mean_sets_hsp1,  mean_sets_hsp2
-)
-attr(rows, "position") <- c(3, 3)
 
 notes <- paste(note_obs, note_fe,
                paste0("Numbers in parentheses are Conley standard errors with a ",
                       se_dist, " radius."))
-notes_main <- paste(notes, note_ybar)
 
 modelsummary(
   list("A) CPUE (mt/day)" = skj_days_post,
        "B) CPUE (mt/set)" = skj_sets_post),
-  title = paste(
-    "\\label{tab:h3_rob_pocket}Robustness check: Coefficient estimates for change in",
-    "skipjack tuna CPUE in areas within 100 nautical miles of each high seas pocket after",
-    "the closure, estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)",
-    "and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$)."
-  ),
+  title = "\\label{tab:h3_rob_pocket_skj_ps}Coefficient estimates for change in
+    skipjack tuna CPUE in areas within 100 nautical miles of each high seas pocket after
+    the closure, estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
+    and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$). The first column shows our same main
+             text estimates as in \\autoref{tab:h3}.",
   shape = "rbind",
   stars = tab_stars,
   gof_omit = gof_omit,
   coef_map = coef,
-  add_rows = rows,
-  notes = notes_main,
+  notes = notes,
   escape = F,
   output = here("content", "tab", "h3_rob_pocket_skj_ps.tex")
 )
