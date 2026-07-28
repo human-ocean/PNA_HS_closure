@@ -46,8 +46,7 @@ setFixest_fml(
 
 setFixest_dict(dict = c(post = "Post"))
 
-outcomes_levels <- c("Effort (days)", "Effort (sets)")
-outcomes_ihs <- c("Effort [asinh(days)]", "Effort [asinh(sets)]")
+outcomes <- c("Effort (days)", "Effort (sets)")
 
 
 ## Estimate --------------------------------------------------------------------
@@ -57,49 +56,49 @@ post_lev <- feols(..levels ~ ..post | ..fe,
                   data = data,
                   subset = ~treated ==1,
                   se = "conley") |> 
-  set_names(outcomes_levels)
+  set_names(outcomes)
 
 post_ihs <- feols(..ihs ~ ..post | ..fe,
                  data = data,
                  subset = ~treated ==1,
                  se = "conley") |> 
-  set_names(outcomes_ihs)
+  set_names(outcomes)
 
 ## Event studies
 dyn_lev <- feols(..levels ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
                  se = "conley") |> 
-  set_names(outcomes_levels)
+  set_names(outcomes)
 
 dyn_ihs <- feols(..ihs ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
                  se = "conley") |> 
-  set_names(outcomes_ihs)
+  set_names(outcomes)
 
 # TWFE -------------------------------------------------------------------------
 ## Pre/post regressions
 post_lev_twfe <- feols(..levels ~ ..post_twfe | ..twfe,
                   data = data,
                   se = "conley") |> 
-  set_names(outcomes_levels)
+  set_names(outcomes)
 
 post_ihs_twfe <- feols(..ihs ~ ..post_twfe | ..twfe,
                   data = data,
                   se = "conley") |> 
-  set_names(outcomes_ihs)
+  set_names(outcomes)
 
 ## Event studies
 dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
                       data = data,
                       se = "conley") |> 
-  set_names(outcomes_levels)
+  set_names(outcomes)
 
 dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
                       data = data,
                       se = "conley") |> 
-  set_names(outcomes_ihs)
+  set_names(outcomes)
 
 # VISUALIZE ####################################################################
 
@@ -168,7 +167,11 @@ wrap_notes(here("content/tab/h1_reg.tex"))
 
 modelsummary(models = list("A) Levels" = post_lev,
                            "B) Inverse-hyperbolic sine transformation" = post_ihs),
-             title = "\\label{tab:h1_self}Change in fishing effort inside the high seas pockets.",
+             title = "\\label{tab:h1_self}Coefficient estimates for change in fishing
+             effort inside the high seas pockets after the closure.
+             Panel A presents results in levels. Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
              shape = "rbind",
              stars = tab_stars,
              gof_omit = gof_omit,
@@ -182,7 +185,13 @@ wrap_notes(here("content/tab/h1_reg_self.tex"))
 
 modelsummary(models = list("A) Levels" = post_lev_twfe,
                            "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
-             title = "\\label{tab:h1_twfe}Change in fishing effort inside the high seas pockets relative to other high seas areas.",
+             title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing
+             effort inside the high seas pockets after the closure, relative to changes in
+             fishing effort observed in other comparable high seas areas of the WCPFC
+             convention area. Panel A presents results in levels (identical to the
+             main-text estimates in \\autoref{tab:h1}). Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
              shape = "rbind",
              stars = tab_stars,
              gof_omit = gof_omit,
