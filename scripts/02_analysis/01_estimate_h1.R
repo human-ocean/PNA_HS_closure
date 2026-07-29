@@ -6,7 +6,7 @@
 # jc_villasenor@miami.edu
 # July 24, 2026
 #
-# Description: Tests whether fishing effort within the high seas was elliminated
+# Description: Tests whether fishing effort within the high seas was eliminated
 #
 ################################################################################
   
