@@ -74,7 +74,7 @@ all_logs_es <- feols(..logs ~ ..dyn_twfe | ..fe,
 
 # Now for each species ---------------------------------------------------------
 # Do it one species at a time. This requires that, for each species, we remove observations
-# whare a particular column is 0
+# where a particular column is 0
 fit_spp <- function(spp, spec = "post", outcome = "levels", data){
   # Filter the data inside
   inside_data <- data |> 
@@ -190,8 +190,7 @@ msummary(list("A) Levels" = all_levels_post,
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
-             which the dependent variable is transformed using the inverse
-             hyperbolic sine (IHS) transformation.",
+             which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -209,8 +208,7 @@ msummary(list("A) Levels" = alb_levels_post,
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
-             which the dependent variable is transformed using the inverse
-             hyperbolic sine (IHS) transformation.",
+             which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -223,14 +221,13 @@ wrap_notes(here("content", "tab", "h2_reg_alb.tex"))
 
 msummary(list("A) Levels" = bet_levels_post,
               "B) Log-transformed" = bet_logs_post),
-         title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in all
+         title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in bigeye
              tuna CPUE caught by the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels (same as in \\autoref{tab:h2}).
              Panel B presents results in
-             which the dependent variable is transformed using the inverse
-             hyperbolic sine (IHS) transformation.",
+             which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
@@ -248,8 +245,7 @@ msummary(list("A) Levels" = yft_levels_post,
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
-             which the dependent variable is transformed using the inverse
-             hyperbolic sine (IHS) transformation.",
+             which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
          gof_omit = gof_omit,
