@@ -103,31 +103,25 @@ dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
 # VISUALIZE ####################################################################
 
 ## Another step ----------------------------------------------------------------
-p1 <- ggiplot(dyn_lev,
-             multi_style = "facet", 
-             facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
+# Self spec: combine levels and IHS outcomes into one faceted plot
+p1 <- ggiplot(list(dyn_lev, dyn_ihs),
+              geom_style = "ribbon",
+              multi_style = "facet",
+              col = rep(ps_color, 2),
+              pt.pch = 1,
+              facet_args = list(scales = "free_y", ncol = 2)) +
+  theme_linedraw() +
   theme(legend.position = "none") +
   labs(x = "Year")
 
-p2 <- ggiplot(dyn_ihs,
-             multi_style = "facet", 
-             facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
-  theme(legend.position = "none") +
-  labs(x = "Year")
-
-p3 <- ggiplot(dyn_lev_twfe,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
-  theme(legend.position = "none") +
-  labs(x = "Year")
-
-p4 <- ggiplot(dyn_ihs_twfe,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
+# TWFE spec: combine levels and IHS outcomes into one faceted plot
+p2 <- ggiplot(list(dyn_lev_twfe, dyn_ihs_twfe),
+              geom_style = "ribbon",
+              multi_style = "facet",
+              col = rep(ps_color, 2),
+              pt.pch = 1,
+              facet_args = list(scales = "free_y", ncol = 2)) +
+  theme_linedraw() +
   theme(legend.position = "none") +
   labs(x = "Year")
 
@@ -153,7 +147,7 @@ notes_main <- paste(notes, note_ybar)
 # Needs caption
 # Needs mean of Y in pre-treatment period
 modelsummary(post_lev_twfe,
-             title = "\\label{tab:h1}Coefficient estimates for the change in fishing effort inside
+             title = "\\label{tab:h1}Coefficient estimates for change in fishing effort inside
              the high seas pockets after the closure, relative to changes in fishing effort
              observed for other comparable high seas areas in the WCPFC convention area.",
              stars = tab_stars,
@@ -226,7 +220,7 @@ data |>
   select(-year) |> 
   summarize_all(c(mean = mean, sd = sd)) |>
   kableExtra::kbl(format = "simple",
-                  caption = "Mean annual effort inside HS pockets") |>
+                  caption = "Mean annual effort inside HS pockets before closure") |>
   write_summary()
 
 data |> 
@@ -329,3 +323,11 @@ figure <- plot_grid(ts_days, ts_sets,
 ggsave(plot = figure,
        filename = here("content/img/h1_main_figure.png"),
        width = 9, height = 6)
+
+plots <- list(p1,
+              p2)
+
+walk2(.x = plots,
+      .y = c("self", "twfe"),
+      .f = es_save,
+      prefix = "h1")
