@@ -108,3 +108,6 @@ content_ps_catch: data/processed/h1_panel.rds
 # CLEAN ##########################################################################
 clean:
 	rm -f content/tab/*.tex content/img/*.png content/summaries/*.tex
+
+dag:
+	make -Bnd | make2graph | dot -Tpng -o dag.png
