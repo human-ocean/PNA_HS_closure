@@ -1,5 +1,5 @@
 ################################################################################
-# H3 Robustness: Spillover effects split by high seas pocket
+# H2 Robustness: Rebound effects split by high seas pocket
 ################################################################################
 #
 # Juan Carlos Villaseñor-Derbez
@@ -7,7 +7,7 @@
 # 2026-05-20
 #
 # Robustness check for Hypothesis 2 (rebound effects for Bigeye). Re-estimates
-# the main H2 specification for bigeye tuna caught by the longline seine fleet,
+# the main H2 specification for bigeye tuna caught by the longline fleet,
 # splitting the sample by high seas pocket: HSP1 (lon <= 152.5 degrees) and
 # HSP2 (lon > 152.5 degrees). Uses fixest's fsplit argument to produce
 # pocket-specific estimates alongside the full-sample model in a single call.
@@ -103,12 +103,13 @@ modelsummary(
                                        bet_levels_post_hsp1[2],
                                        bet_levels_post_hsp2[2]) |> 
          set_names("sample: Full sample", "sample: HSP1", "sample: HSP2")),
-  title = "\\label{tab:h2_rob_pocket_bet_ll}Coefficient estimates for change in bigeye tuna CPUE in
-  the high seas pockets after the closure, relative to changes in bigeye tuna CPUE
-  observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area,
-  estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
-  and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$). The first column shows our main
-  text estimates as in \\autoref{tab:h2}.",
+  title = "\\label{tab:h2_rob_pocket_bet_ll}Coefficient estimates for change in 
+  bigeye tuna CPUE caught by the longline fleet in
+  the high seas pockets after the closure, relative to changes in CPUE
+  observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area.
+  Models are estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
+  and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$; See \\autoref{fig:map}).
+  The first column shows our main text estimates as in \\autoref{tab:h2}.",
   shape = "rbind",
   stars = tab_stars,
   gof_omit = gof_omit,
