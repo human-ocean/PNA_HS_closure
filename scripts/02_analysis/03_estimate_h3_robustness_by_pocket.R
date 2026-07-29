@@ -101,10 +101,11 @@ modelsummary(
   list("A) CPUE (mt/day)" = skj_days_post,
        "B) CPUE (mt/set)" = skj_sets_post),
   title = "\\label{tab:h3_rob_pocket_skj_ps}Coefficient estimates for change in
-    skipjack tuna CPUE in areas within 100 nautical miles of each high seas pocket after
-    the closure, estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
-    and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$). The first column shows our same main
-             text estimates as in \\autoref{tab:h3}.",
+    skipjack tuna CPUE caught by the purse seine fleet in areas within 100
+    nautical miles of each high seas pocket after the closure.
+    Models are estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
+    and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$); See \\autoref{fig:map}.
+    The first column shows our main text estimates as in \\autoref{tab:h3}.",
   shape = "rbind",
   stars = tab_stars,
   gof_omit = gof_omit,
