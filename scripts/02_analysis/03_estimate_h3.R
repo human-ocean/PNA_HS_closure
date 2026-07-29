@@ -267,7 +267,7 @@ notes_main <- paste(notes, note_ybar)
 # Needs mean of Y in pre-treatment period
 modelsummary(skj_ps_levels_post,
              title = "\\label{tab:h3}Coefficient estimates for change in skipjack tuna CPUE in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in bigeye tuna CPUE
+             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.",
              stars = tab_stars,
              gof_omit = gof_omit,
