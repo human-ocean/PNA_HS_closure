@@ -50,3 +50,8 @@ rsconnect/
 
 # Zip files
 *.zip
+.positai
+
+.DS_Store
+
+.posit/assistant

@@ -1,12 +1,12 @@
 ################################################################################
-# title
+# H1 Test: Decrease in fishing effort
 ################################################################################
 #
 # Juan Carlos Villaseñor-Derbez
 # jc_villasenor@miami.edu
-# date
+# July 24, 2026
 #
-# Description
+# Description: Tests whether fishing effort within the high seas was eliminated
 #
 ################################################################################
   
@@ -17,8 +17,13 @@ pacman::p_load(
   here,
   fixest,
   tidyverse,
-  ggfixest
+  modelsummary,
+  ggfixest,
+  cowplot,
+  magick
 )
+
+source(here("scripts/00_config.R"))
 
 ## Load data -------------------------------------------------------------------
 data <- read_rds(file = here("data/processed/h1_panel.rds"))
@@ -39,148 +44,288 @@ setFixest_fml(
   ..fe = ~id,
   ..twfe = ~id + year)
 
-setFixest_dict(dict = c("post" = "Post"))
+setFixest_dict(dict = c(post = "Post"))
+
+outcomes <- c("Effort (days)", "Effort (sets)")
 
 
 ## Estimate --------------------------------------------------------------------
 # Self
+## Pre/post regressions
+post_lev <- feols(..levels ~ ..post | ..fe,
+                  data = data,
+                  subset = ~treated ==1,
+                  se = "conley") |> 
+  set_names(outcomes)
+
+post_ihs <- feols(..ihs ~ ..post | ..fe,
+                 data = data,
+                 subset = ~treated ==1,
+                 se = "conley") |> 
+  set_names(outcomes)
+
+## Event studies
 dyn_lev <- feols(..levels ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
-                 se = "conley")
+                 se = "conley") |> 
+  set_names(outcomes)
 
 dyn_ihs <- feols(..ihs ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
-                 se = "conley")
+                 se = "conley") |> 
+  set_names(outcomes)
 
-post_lev <- feols(..levels ~ ..post | ..fe,
-                  data = data,
-                  subset = ~treated ==1,
-                  se = "conley")
-post_ihs <- feols(..ihs ~ ..post | ..fe,
-                 data = data,
-                 subset = ~treated ==1,
-                 se = "conley")
-
-# TWFE
-dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
-                      data = data,
-                      se = "conley")
-dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
-                      data = data,
-                      se = "conley")
-
-
+# TWFE -------------------------------------------------------------------------
+## Pre/post regressions
 post_lev_twfe <- feols(..levels ~ ..post_twfe | ..twfe,
                   data = data,
-                  se = "conley")
+                  se = "conley") |> 
+  set_names(outcomes)
+
 post_ihs_twfe <- feols(..ihs ~ ..post_twfe | ..twfe,
                   data = data,
-                  se = "conley")
+                  se = "conley") |> 
+  set_names(outcomes)
 
-all_es <- map_dfr(list("No counterfactual" = dyn_lev,
-                       "Counterfactual" = dyn_lev_twfe),
-                  iplot_data,
-                  .id = "model_type") |> 
-  mutate(lhs = ifelse(lhs == "days", "Effort (days)", "Effort (sets)"))
+## Event studies
+dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
+                      data = data,
+                      se = "conley") |> 
+  set_names(outcomes)
+
+dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
+                      data = data,
+                      se = "conley") |> 
+  set_names(outcomes)
 
 # VISUALIZE ####################################################################
-
-# Build a single visualization
-p <- ggplot(all_es, aes(x = x, y = y, shape = model_type, fill = lhs)) + 
-  geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 2009, linetype = "dashed") +
-  geom_linerange(aes(ymin = ci_low, ymax = ci_high),
-                 position = position_dodge(width = 0.5)) +
-  geom_point(position = position_dodge(width = 0.5),
-             size = 3,
-             color = "black") +
-  facet_wrap(~lhs, scales = "free_y", ncol = 1) +
-  theme_minimal() +
-  scale_shape_manual(values = c(21, 22)) +
-  scale_fill_manual(values = c("steelblue", "cadetblue")) +
-  guides(fill = FALSE,
-         shape = guide_legend(
-           override.aes = list(shape = c(16, 15))
-         )) +
-  labs(x = "Year",
-       y = "Estimate ± 95% CI",
-       shape = "Model type")
-  
 
 ## Another step ----------------------------------------------------------------
 p1 <- ggiplot(dyn_lev,
              multi_style = "facet", 
-             facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+             facet_args = list(scales = "free_y", ncol = 1)) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p2 <- ggiplot(dyn_ihs,
              multi_style = "facet", 
-             facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+             facet_args = list(scales = "free_y", ncol = 1)) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p3 <- ggiplot(dyn_lev_twfe,
               multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+              facet_args = list(scales = "free_y", ncol = 1)) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
 p4 <- ggiplot(dyn_ihs_twfe,
               multi_style = "facet", 
-              facet_args = list(scales = "free_y")) +
-  theme_minimal() +
-  scale_color_manual(values = c("steelblue", "cadetblue")) +
+              facet_args = list(scales = "free_y", ncol = 1)) +
+  scale_color_manual(values = c(ps_color, ps_color)) +
   theme(legend.position = "none") +
   labs(x = "Year")
 
-modelsummary::modelsummary(list("A) Self" = post_lev,
-                                "B) Cont" = post_lev_twfe),
-                           shape = "rbind",
-                           stars = T,
-                           gof_omit = "With|IC|RMSE|FE",
-                           coef_map = c("post" = "Post",
-                                        "post:treated" = "Post x Treated"),
-                           output = "content/tab/reg.tex")
+## Tables ----------------------------------------------------------------------
+coef <- c("post" = "Post",
+          "post:treated" = "Post x Treated")
 
-modelsummary::modelsummary(list("A) Self" = post_ihs,
-                                "B) Cont" = post_ihs_twfe),
-                           shape = "rbind",
-                           stars = T,
-                           gof_omit = "With|IC|RMSE|FE",
-                           coef_map = c("post" = "Post",
-                                        "post:treated" = "Post x Treated"),
-                           output = "content/tab/reg_ihs.tex")
+se_dist <- str_extract(attr(post_lev_twfe[[1]]$se, "type"), "[:digit:]+km")
 
-ggsave(plot = p,
-       filename = here("content/img/h1_event_study.png"),
-       width = 8, height = 5)
+# Mean outcomes
+mean_days <- mean(data$days[data$post == 0 & data$treated == 1])
+mean_sets <- mean(data$num_sets[data$post == 0 & data$treated == 1])
 
-ggsave(plot = p1,
-       filename = here("content/img/Effort_plot.png"),
-       width = 10, height = 2.5)
+rows <- tribble(~term, ~days, ~sets,
+                '$\\bar{Y}_{pre}$', mean_days, mean_sets)
 
-ggsave(plot = p2,
-       filename = here("content/img/Effort_plot_ihs.png"),
-       width = 10, height = 2.5)
+attr(rows, 'position') <- c(3, 1)
 
-ggsave(plot = p3,
-       filename = here("content/img/Effort_plot_twfe.png"),
-       width = 10, height = 2.5)
+notes <- paste(note_obs, note_fe,
+  paste0("Numbers in parentheses are Conley standard errors using a ", se_dist, " radius."))
+notes_main <- paste(notes, note_ybar)
 
-ggsave(plot = p4,
-       filename = here("content/img/Effort_plot_ihs_twfe.png"),
-       width = 10, height = 2.5)
+# Needs caption
+# Needs mean of Y in pre-treatment period
+modelsummary(post_lev_twfe,
+             title = "\\label{tab:h1}Coefficient estimates for the change in fishing effort inside
+             the high seas pockets after the closure, relative to changes in fishing effort
+             observed for other comparable high seas areas in the WCPFC convention area.",
+             stars = tab_stars,
+             gof_omit = gof_omit,
+             coef_map = coef,
+             add_rows = rows,
+             notes = notes_main,
+             escape = F,
+             output = here("content/tab/h1_reg.tex"))
+wrap_notes(here("content/tab/h1_reg.tex"))
+
+modelsummary(models = list("A) Levels" = post_lev,
+                           "B) Inverse-hyperbolic sine transformation" = post_ihs),
+             title = "\\label{tab:h1_self}Coefficient estimates for change in fishing
+             effort inside the high seas pockets after the closure.
+             Panel A presents results in levels. Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
+             shape = "rbind",
+             stars = tab_stars,
+             gof_omit = gof_omit,
+             coef_map = coef,
+             notes = paste(note_obs, 
+                           paste0("Numbers in parentheses are Conley standard errors using a ", se_dist, " radius.")),
+             escape = F,
+             output = here("content/tab/h1_reg_self.tex"))
+make_small(here("content/tab/h1_reg_self.tex"))
+wrap_notes(here("content/tab/h1_reg_self.tex"))
+
+modelsummary(models = list("A) Levels" = post_lev_twfe,
+                           "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
+             title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing
+             effort inside the high seas pockets after the closure, relative to changes in
+             fishing effort observed in other comparable high seas areas of the WCPFC
+             convention area. Panel A presents results in levels (identical to the
+             main-text estimates in \\autoref{tab:h1}). Panel B presents results in
+             which the dependent variable is transformed using the inverse
+             hyperbolic sine (IHS) transformation.",
+             shape = "rbind",
+             stars = tab_stars,
+             gof_omit = gof_omit,
+             coef_map = coef,
+             notes = notes,
+             escape = F,
+             output = here("content/tab/h1_reg_twfe.tex"))
+make_small(here("content/tab/h1_reg_twfe.tex"))
+wrap_notes(here("content/tab/h1_reg_twfe.tex"))
+
+## Summary stats ---------------------------------------------------------------
+write_summary <- function(x, ts = F, append = T) {
+  # browser()
+  timestamp <- if(ts) {paste("---", Sys.Date(), "---\n")} else {""}
+  
+  cat(paste0(timestamp, x, "\n"),
+      file = here("content", "summaries", "h1_summaries.tex"),
+      append = append)
+  cat("\n\n",
+      file = here("content", "summaries", "h1_summaries.tex"), append = T)
+}
+
+write_summary("Notes for H1", ts = T, append = F)
+
+data |> 
+  filter(treated == 1,
+         post == 0) |> 
+  group_by(year) |> 
+  summarize(days = sum(days),
+            num_sets = sum(num_sets),
+            .groups = "drop") |> 
+  select(-year) |> 
+  summarize_all(c(mean = mean, sd = sd)) |>
+  kableExtra::kbl(format = "simple",
+                  caption = "Mean annual effort inside HS pockets") |>
+  write_summary()
+
+data |> 
+  group_by(treated) |> 
+  summarize(n = n_distinct(id)) |> 
+  kableExtra::kbl(format = "simple",
+                  caption = "N per treatment group") |>
+  write_summary()
+
+## Figures ---------------------------------------------------------------------
+# Build figure for paper. Panel figure with the following:
+# TS of effort in days and sets for A and B. Then event study in each metric,
+# for C and D.
+
+inside_hs <- read_rds(file = here("data/processed/h1_panel.rds")) |> 
+  filter(treated == 1)
+
+ts_days <- ggplot(data = inside_hs,
+                  aes(x = year, y = days)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  stat_summary(geom = "line", fun = "sum",
+               linetype = "dashed",
+               color = ps_color) +
+  stat_summary(geom = "point", fun = "sum",
+               size = pt_size,
+               color = ps_color) +
+  theme_linedraw() +
+  guides(fill = "none",
+         shape = guide_legend(
+           override.aes = list(shape = c(16, 15)))) +
+  labs(x = "Year",
+       y = "Fishing effort (days)")
+
+ts_sets <- ggplot(data = inside_hs,
+                  aes(x = year, y = num_sets)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  stat_summary(geom = "line", fun = "sum",
+               linetype = "dashed",
+               color = ps_color) +
+  stat_summary(geom = "point", fun = "sum",
+               shape = 17,
+               size = pt_size,
+               color = ps_color) +
+  theme_linedraw() +
+  guides(fill = "none",
+         shape = guide_legend(
+           override.aes = list(shape = c(16, 15)))) +
+  labs(x = "Year",
+       y = "Fishing effort (sets)")
+
+ps_raster <- as.raster(
+  image_read_svg(here::here("data/raw/fish_pics/Purse seine.svg"), width = 500)
+)
+
+# Compute image placement in data coordinates (top-right of panel)
+ts_sets_build <- ggplot_build(ts_sets)
+ts_sets_xrange <- ts_sets_build$layout$panel_params[[1]]$x.range
+ts_sets_yrange <- ts_sets_build$layout$panel_params[[1]]$y.range
+img_w <- 7.5
+img_aspect <- nrow(ps_raster) / ncol(ps_raster)
+# Scale height to preserve aspect ratio, accounting for non-square panel (w/h ≈ 1.56)
+panel_ratio <- 1.56
+img_h <- img_w * img_aspect * (diff(ts_sets_yrange) / diff(ts_sets_xrange)) * panel_ratio
+
+ts_sets <- ts_sets +
+  annotation_raster(ps_raster,
+                    xmin = ts_sets_xrange[2] - img_w,
+                    xmax = ts_sets_xrange[2],
+                    ymin = ts_sets_yrange[2] - img_h,
+                    ymax = ts_sets_yrange[2])
+
+es_days <- ggiplot(dyn_lev_twfe[[1]],
+                   geom_style = "ribbon",
+                   col = ps_color) +
+  labs(title = NULL,
+       x = "Year",
+       y = "Estimate ± 95% CI (days)") +
+  theme_linedraw()
+
+es_sets <- ggiplot(dyn_lev_twfe[[2]],
+                   geom_style = "ribbon",
+                   col = ps_color,
+                   pt.pch = 17) +
+  labs(title = NULL,
+       x = "Year",
+       y = "Estimate ± 95% CI (sets)") +
+  theme_linedraw()
+
+figure <- plot_grid(ts_days, ts_sets,
+                    es_days, es_sets,
+                    labels = "AUTO")
 
 # EXPORT #######################################################################
 
 ## The final step --------------------------------------------------------------
-  
+ggsave(plot = figure,
+       filename = here("content/img/h1_main_figure.png"),
+       width = 9, height = 6)
