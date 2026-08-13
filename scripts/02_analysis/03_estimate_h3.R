@@ -349,7 +349,7 @@ msummary(list("A) Levels" = all_ll_levels_post,
               "B) Log-transformed" = all_ll_logs_post),
          title = "\\label{tab:h3_reg_all_ll}Coefficient estimates for change in all tuna CPUE caught by the longline fleet in
              areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
@@ -365,7 +365,7 @@ msummary(list("A) Levels" = alb_ll_levels_post,
               "B) Log-transformed" = alb_ll_logs_post),
          title = "\\label{tab:h3_reg_alb_ll}Coefficient estimates for change in albacore tuna CPUE caught by the longline fleet in
              areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
@@ -381,7 +381,7 @@ msummary(list("A) Levels" = bet_ll_levels_post,
               "B) Log-transformed" = bet_ll_logs_post),
          title = "\\label{tab:h3_reg_bet_ll}Coefficient estimates for change in bigeye tuna CPUE caught by the longline fleet in
              areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
@@ -397,7 +397,7 @@ msummary(list("A) Levels" = yft_ll_levels_post,
               "B) Log-transformed" = yft_ll_logs_post),
          title = "\\label{tab:h3_reg_yft_ll}Coefficient estimates for change in yellowfin tuna CPUE caught by the longline fleet in
              areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
          shape = "rbind",
          stars = tab_stars,
