@@ -89,33 +89,28 @@ bet_levels_post_hsp2 <- feols(..levels ~ ..post_twfe | ..fe,
 coef <- c("post" = "Post",
           "post:treated" = "Post x Treated")
 
-se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "type"), "[:digit:]+km")
+se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "vcov_type"), "[:digit:]+km")
 
 notes <- paste(note_obs, note_fe,
                paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
 
-modelsummary(
-  list("A) CPUE (fish / 1000 hooks)" = c(bet_levels_post[1],
-                                         bet_levels_post_hsp1[1],
-                                         bet_levels_post_hsp2[1]) |> 
-         set_names("sample: Full sample", "sample: HSP1", "sample: HSP2"),
-       "B) CPUE (mt / 1000 hooks)" = c(bet_levels_post[2],
-                                       bet_levels_post_hsp1[2],
-                                       bet_levels_post_hsp2[2]) |> 
-         set_names("sample: Full sample", "sample: HSP1", "sample: HSP2")),
-  title = "\\label{tab:h2_rob_pocket_bet_ll}Coefficient estimates for change in 
+save_table(
+list("A) CPUE (fish / 1000 hooks)" = c(bet_levels_post[1],
+                                       bet_levels_post_hsp1[1],
+                                       bet_levels_post_hsp2[1]) |> 
+       set_names("sample: Full sample", "sample: HSP1", "sample: HSP2"),
+     "B) CPUE (mt / 1000 hooks)" = c(bet_levels_post[2],
+                                     bet_levels_post_hsp1[2],
+                                     bet_levels_post_hsp2[2]) |> 
+       set_names("sample: Full sample", "sample: HSP1", "sample: HSP2")),
+title = "\\label{tab:h2_rob_pocket_bet_ll}Coefficient estimates for change in 
   bigeye tuna CPUE caught by the longline fleet in
   the high seas pockets after the closure, relative to changes in CPUE
   observed for other tropical (20°S - 20°N) high seas areas in the WCPFC convention area.
   Models are estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
   and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$; See \\autoref{fig:map}).
   The first column shows our main text estimates as in \\autoref{tab:h2}.",
-  shape = "rbind",
-  stars = tab_stars,
-  gof_omit = gof_omit,
-  coef_map = coef,
-  notes = notes,
-  escape = F,
-  output = here("content/tab/h2_rob_pocket_bet_ll.tex"))
-make_small(here("content", "tab", "h2_rob_pocket_bet_ll.tex"))
-wrap_notes(here("content", "tab", "h2_rob_pocket_bet_ll.tex"))
+shape = "rbind",
+coef_map = coef,
+notes = notes,
+path = here("content/tab/h2_rob_pocket_bet_ll.tex"))
