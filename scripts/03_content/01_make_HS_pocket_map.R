@@ -91,16 +91,16 @@ h3_ll_cells <- h3_ll |>
 
 ## Another step ----------------------------------------------------------------
 p <- ggplot() + 
-  geom_sf(data = coast,
-          fill = "black",
-          color = "black",
-          linewidth = 0) +
   geom_sf(data = eezs,
           aes(fill = "Non-PNA EEZ"),
           color = "black") +
   geom_sf(data = PNA_eezs,
           aes(fill = "PNA EEZ"),
           color = "black") +
+  geom_sf(data = coast,
+          fill = "black",
+          color = "black",
+          linewidth = 0) +
   geom_sf(data = hs_pocket,
           aes(fill = "High Seas Pockets"),
           color = "black") +

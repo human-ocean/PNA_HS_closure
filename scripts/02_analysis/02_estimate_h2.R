@@ -260,6 +260,7 @@ data |>
 # Top row is raw CPUE time series and bottom row are event-studies
 pos <- position_dodge(width = 0.5)
 
+# Time-series of catch (n)
 ts_n <- ggplot(data,
                aes(x = year, y = cpue_bet_n, group = treated, linetype = group)) +
   geom_vline(xintercept = 2009.5,
@@ -294,6 +295,7 @@ ts_n <- ggplot(data,
        y = "CPUE (fish / thousand hooks)",
        linetype = "Treatment")
 
+# Time-series of catch (mt)
 ts_mt <- ggplot(data = data,
                 aes(x = year, y = cpue_bet_mt, group = treated, linetype = group)) +
   geom_vline(xintercept = 2009.5,
@@ -324,6 +326,7 @@ ts_mt <- ggplot(data = data,
   labs(x = "Year",
        y = "CPUE (mt / thousand hooks)")
 
+# Add a tuna on top of the mt plot
 bet_raster <- as.raster(
   image_read_svg(here::here("data/raw/fish_pics/BET.svg"), width = 500)
 )
@@ -343,6 +346,8 @@ ts_mt <- ts_mt +
                     ymin = ts_mt_yrange[2] - img_h,
                     ymax = ts_mt_yrange[2])
 
+# Now build the event studies
+# First for n
 es_n <- ggiplot(bet_levels_es[[1]],
                 geom_style = "ribbon",
                 col = bet_color) +
@@ -351,6 +356,7 @@ es_n <- ggiplot(bet_levels_es[[1]],
        y = "Estimate ± 95% CI\n(fish / thousand hooks)") +
   theme_linedraw()
 
+#Now for metric tons
 es_mt <- ggiplot(bet_levels_es[[2]],
                  geom_style = "ribbon",
                  col = bet_color,
@@ -360,13 +366,49 @@ es_mt <- ggiplot(bet_levels_es[[2]],
        y = "Estimate ± 95% CI\n(mt / thousand hooks)") +
   theme_linedraw()
 
-
+# Put it together
 figure <- plot_grid(ts_n, ts_mt,
                     es_n, es_mt,
                     labels = "AUTO")
 
 
 ## Supplementary figures -------------------------------------------------------
+
+# First, a time series of effort (thousand hooks)
+ts_hooks <- ggplot(data,
+               aes(x = year, y = thooks, group = treated, linetype = group)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  stat_summary(geom = "line",
+               fun = "mean",
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "linerange", 
+               linetype = "solid",
+               fun.data = "mean_cl_normal",
+               linewidth = 0.5,
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "point",
+               fun = "mean",
+               size = pt_size,
+               color = bet_color,
+               position = pos) +
+  scale_linetype_manual(values = c("Control" = "dashed",
+                                   "Treatment" = "solid")) +
+  theme_linedraw() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(1, 1),
+        legend.justification.inside = c(1, 1),
+        legend.background = element_blank()) +
+  guides(fill = "none") +
+  labs(x = "Year",
+       y = "Effort (housand hooks)",
+       linetype = "Treatment")
+
 
 # Get coefficient estimates
 coef <- list("all_levels" = all_levels_post,
@@ -492,6 +534,11 @@ ggsave(plot = coefplot_logs,
        filename = here("content", "img", "h2_coefplot_logs.png"),
        width = 6,
        height = 4)
+
+ggsave(plot = ts_hooks,
+       filename = here("content/img/h2_effort_ts.png"),
+       width = 6, height = 4)
+
 
 plots <- list(all_es,
               alb_es,

@@ -135,7 +135,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
       } else if (outcome == "logs") {
         model <- list(feols(log(cpue_tot_days) ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
                       feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")) |> 
-          set_names(outcomes_ps_log)
+          set_names(outcomes_ps)
       }
     } else if (spec == "es") {
       if (outcome == "levels") {
@@ -162,7 +162,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
                          weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
-            set_names(outcomes_ll_log)
+            set_names(outcomes_ll)
         }
       } else if (spec == "es") {
         if (outcome == "levels") {
