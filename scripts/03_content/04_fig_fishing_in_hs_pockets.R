@@ -32,20 +32,20 @@ treated_hs_cells <- exact_extract(wcpfc_rast, hs_pocket, include_xy = T) |>
   rename(lon = x, lat = y) |> 
   filter(coverage_fraction == 1) |>
   select(lon, lat) |> 
-  mutate(treated = 1)
+  mutate(fully = 1)
 
 pts_in <- wcpfc_sf |> 
   st_filter(hs_pocket) |> 
   left_join(treated_hs_cells) |> 
-  replace_na(replace = list(treated = 0))
+  replace_na(replace = list(fully = 0))
 
 ggplot() +
   geom_sf(data = hs_pocket) + 
-  geom_tile(data = pts_in, aes(x = lon, y = lat, fill = factor(treated)), color = "black", alpha = 0.5) +
+  geom_tile(data = pts_in, aes(x = lon, y = lat, fill = factor(fully)), color = "black", alpha = 0.5) +
   facet_wrap(~year) +
   theme_void()
 
-ggplot(data = pts_in, aes(x = year, y = days, group = treated, color = treated)) +
+ggplot(data = pts_in, aes(x = year, y = days, group = fully, color = factor(fully))) +
   stat_summary(geom = "line", fun = sum) +
   theme_bw()
 
