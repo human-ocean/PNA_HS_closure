@@ -292,7 +292,7 @@ ts_n <- ggplot(data,
         legend.background = element_blank()) +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE ± 95% CI (fish / thousand hooks)",
+       y = "CPUE ± 95% CI\n(fish / thousand hooks)",
        linetype = "Treatment")
 
 # Time-series of catch (mt)
@@ -324,7 +324,7 @@ ts_mt <- ggplot(data = data,
   theme(legend.position = "none") +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE ± 95% CI (mt / thousand hooks)")
+       y = "CPUE ± 95% CI\n(mt / thousand hooks)")
 
 # Add a tuna on top of the mt plot
 bet_raster <- as.raster(
