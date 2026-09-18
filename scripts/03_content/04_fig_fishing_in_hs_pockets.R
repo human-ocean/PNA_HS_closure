@@ -22,6 +22,7 @@ ref_rast <- rast(xmin = -180, xmax = 180,
 wcpfc_sf <- wcpfc_data |> 
   st_as_sf(coords = c("lon", "lat"),
            crs = "EPSG:4326", remove = F)
+
 # raster (no data, only presence / absence)
 wcpfc_rast <- rasterize(wcpfc_sf,
                         y = ref_rast)
@@ -44,6 +45,14 @@ ggplot() +
   geom_tile(data = pts_in, aes(x = lon, y = lat, fill = factor(fully)), color = "black", alpha = 0.5) +
   facet_wrap(~year) +
   theme_void()
+
+ggplot() +
+  geom_sf(data = hs_pocket) + 
+  geom_tile(data = pts_in, aes(x = lon, y = lat, fill = log(days)), color = "black") +
+  facet_grid(year ~ fully) +
+  theme_void() +
+  scale_fill_viridis_c(na.value = "red")
+
 
 ggplot(data = pts_in, aes(x = year, y = days, group = fully, color = factor(fully))) +
   stat_summary(geom = "line", fun = sum) +

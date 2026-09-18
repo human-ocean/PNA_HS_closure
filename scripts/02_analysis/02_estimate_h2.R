@@ -170,7 +170,7 @@ notes_main <- paste(notes, note_ybar)
 save_table(bet_levels_post,
            small = FALSE,
            title = "\\label{tab:h2}Coefficient estimates for change in bigeye
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.",
            coef_map = coef,
@@ -184,7 +184,7 @@ save_table(bet_levels_post,
 save_table(list("A) Levels" = all_levels_post,
                 "B) Log-transformed" = all_logs_post),
            title = "\\label{tab:h2_reg_all}Coefficient estimates for change in all
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
@@ -197,7 +197,7 @@ save_table(list("A) Levels" = all_levels_post,
 save_table(list("A) Levels" = alb_levels_post,
                 "B) Log-transformed" = alb_logs_post),
            title = "\\label{tab:h2_reg_alb}Coefficient estimates for change in albacore
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
@@ -210,7 +210,7 @@ save_table(list("A) Levels" = alb_levels_post,
 save_table(list("A) Levels" = bet_levels_post,
                 "B) Log-transformed" = bet_logs_post),
            title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in bigeye
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels (same as in \\autoref{tab:h2}).
@@ -224,7 +224,7 @@ save_table(list("A) Levels" = bet_levels_post,
 save_table(list("A) Levels" = yft_levels_post,
                 "B) Log-transformed" = yft_logs_post),
            title = "\\label{tab:h2_reg_yft}Coefficient estimates for change in yellowfin
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
@@ -292,7 +292,7 @@ ts_n <- ggplot(data,
         legend.background = element_blank()) +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (fish / thousand hooks)",
+       y = "CPUE ± 95% CI (fish / thousand hooks)",
        linetype = "Treatment")
 
 # Time-series of catch (mt)
@@ -324,7 +324,7 @@ ts_mt <- ggplot(data = data,
   theme(legend.position = "none") +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (mt / thousand hooks)")
+       y = "CPUE ± 95% CI (mt / thousand hooks)")
 
 # Add a tuna on top of the mt plot
 bet_raster <- as.raster(
