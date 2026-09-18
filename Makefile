@@ -24,7 +24,7 @@ RSCRIPT := Rscript
 
 .PHONY: all processing analysis content clean \
         h1 h2 h2_robustness h3 h3_robustness \
-        content_maps content_h1_map content_ps_catch
+        content_maps content_ps_catch
 
 all: processing analysis content
 
@@ -91,16 +91,13 @@ h3_robustness: data/processed/h3_ps_panel.rds
 
 # 3) CONTENT #####################################################################
 # data/processed --> content/img (manuscript maps & figures)
-content: content_maps content_h1_map content_ps_catch
+content: content_maps content_ps_catch
 
 content_maps: data/processed/PNA_eezs.gpkg data/processed/WCPFC_convention_area.gpkg \
               data/processed/PNA_high_seas_pockets.gpkg \
               data/processed/h1_panel.rds data/processed/h2_panel.rds \
               data/processed/h3_ps_panel.rds data/processed/h3_ll_panel.rds
 	$(RSCRIPT) scripts/03_content/01_make_HS_pocket_map.R
-
-content_h1_map: data/processed/wcpfc_ps_annual.rds data/processed/h1_panel.rds
-	$(RSCRIPT) scripts/03_content/02_h1_map.R
 
 content_ps_catch: data/processed/h1_panel.rds
 	$(RSCRIPT) scripts/03_content/03_fig_ps_catch_inside.R

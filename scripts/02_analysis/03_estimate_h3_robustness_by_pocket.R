@@ -29,9 +29,6 @@ pacman::p_load(
   magick
 )
 
-# Modelsummary keeps changing the way they build columns
-options(modelsummary_factory_latex = "kableExtra")
-
 source(here("scripts/00_config.R"))
 
 ## Load data -------------------------------------------------------------------
@@ -91,31 +88,26 @@ skj_sets_es <- feols(cpue_tot_sets ~ ..dyn_twfe | ..fe,
 ## Regression table ------------------------------------------------------------
 coef <- c("post" = "Post",
           "post:near" = "Post x Near")
-se_dist <- str_extract(attr(skj_days_post[[1]]$se, "type"), "[:digit:]+km")
+se_dist <- str_extract(attr(skj_days_post[[1]]$se, "vcov_type"), "[:digit:]+km")
 
 notes <- paste(note_obs, note_fe,
                paste0("Numbers in parentheses are Conley standard errors with a ",
                       se_dist, " radius."))
 
-modelsummary(
-  list("A) CPUE (mt/day)" = skj_days_post,
-       "B) CPUE (mt/set)" = skj_sets_post),
-  title = "\\label{tab:h3_rob_pocket_skj_ps}Coefficient estimates for change in
+save_table(
+list("A) CPUE (mt/day)" = skj_days_post,
+     "B) CPUE (mt/set)" = skj_sets_post),
+title = "\\label{tab:h3_rob_pocket_skj_ps}Coefficient estimates for change in
     skipjack tuna CPUE caught by the purse seine fleet in areas within 100
     nautical miles of each high seas pocket after the closure.
     Models are estimated separately for HSP1 (western pocket, lon $\\leq$ 152.5$^{\\circ}$)
     and HSP2 (eastern pocket, lon $>$ 152.5$^{\\circ}$); See \\autoref{fig:map}.
     The first column shows our main text estimates as in \\autoref{tab:h3}.",
-  shape = "rbind",
-  stars = tab_stars,
-  gof_omit = gof_omit,
-  coef_map = coef,
-  notes = notes,
-  escape = F,
-  output = here("content", "tab", "h3_rob_pocket_skj_ps.tex")
+shape = "rbind",
+coef_map = coef,
+notes = notes,
+path = here("content", "tab", "h3_rob_pocket_skj_ps.tex")
 )
-make_small(here("content", "tab", "h3_rob_pocket_skj_ps.tex"))
-wrap_notes(here("content", "tab", "h3_rob_pocket_skj_ps.tex"))
 
 # EXPORT #######################################################################
 
@@ -126,7 +118,9 @@ skj_es_1 <- ggiplot(skj_days_es,
                     geom_style = "ribbon",
                     col = rep(skj_color, 3)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = NULL,
        x = "Year",
        y = "Estimate \u00b1 95% CI (mt/day)")
@@ -137,7 +131,9 @@ skj_es_2 <- ggiplot(skj_sets_es,
                     col = rep(skj_color, 3),
                     pt.pch = 17) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = NULL,
        x = "Year",
        y = "Estimate \u00b1 95% CI (mt/set)")

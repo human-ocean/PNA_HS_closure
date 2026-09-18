@@ -23,9 +23,6 @@ pacman::p_load(
   magick
 )
 
-# Modelsummary keeps changing the way they build columns
-options(modelsummary_factory_latex = "kableExtra")
-
 source(here("scripts/00_config.R"))
 
 ## Load data -------------------------------------------------------------------
@@ -54,8 +51,10 @@ setFixest_fml(
 setFixest_dict(dict = c("post" = "Post"))
 
 outcomes_ps <- c("CPUE (mt/day)", "CPUE (mt/set)")
+outcomes_ps_log <- c("log-CPUE (mt/day)", "log-CPUE (mt/set)")
 
 outcomes_ll <- c("CPUE (fish/1000 hooks)", "CPUE (mt/1000 hooks)")
+outcomes_ll_log <- c("log-CPUE (fish/1000 hooks)", "log-CPUE (mt/1000 hooks)")
 
 # PROCESSING ###################################################################
 
@@ -64,24 +63,24 @@ outcomes_ll <- c("CPUE (fish/1000 hooks)", "CPUE (mt/1000 hooks)")
 # Post regressions
 all_ps_levels_post <- list(
   feols(cpue_tot_days ~ ..post_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
-  feols(cpue_tot_sets ~ ..post_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps)
+  feols(cpue_tot_sets ~ ..post_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")) |> 
+  set_names(outcomes_ps)
 
 all_ps_logs_post <- list(
   feols(log(cpue_tot_days) ~ ..post_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
-  feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps)
+  feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")) |> 
+  set_names(outcomes_ps_log)
 
 # Event studies
 all_ps_levels_es <- list(
   feols(cpue_tot_days ~ ..dyn_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
-  feols(cpue_tot_sets ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps)
+  feols(cpue_tot_sets ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")) |> 
+  set_names(outcomes_ps)
 
 all_ps_logs_es <- list(
   feols(log(cpue_tot_days) ~ ..dyn_twfe | ..fe, weights = ~days,     data = ps_data, se = "conley"),
-  feols(log(cpue_tot_sets) ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")
-) |> set_names(outcomes_ps)
+  feols(log(cpue_tot_sets) ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = ps_data, se = "conley")) |> 
+  set_names(outcomes_ps_log)
 
 # Longline
 all_ll_levels_post <- feols(..ll_levels ~ ..post_twfe | ..fe,
@@ -105,7 +104,7 @@ all_ll_logs_es <- feols(..ll_logs ~ ..dyn_twfe | ..fe,
                         weights = ~thooks,
                         data = ll_data,
                         se = "conley") |>
-  set_names(outcomes_ll)
+  set_names(outcomes_ll_log)
 
 
 ## Species-level regressions ---------------------------------------------------
@@ -130,27 +129,23 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
   if (gear == "ps") {
     if (spec == "post") {
       if (outcome == "levels") {
-        model <- list(
-          feols(cpue_tot_days ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
-          feols(cpue_tot_sets ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps)
+        model <- list(feols(cpue_tot_days ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
+                      feols(cpue_tot_sets ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")) |> 
+          set_names(outcomes_ps)
       } else if (outcome == "logs") {
-        model <- list(
-          feols(log(cpue_tot_days) ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
-          feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps)
+        model <- list(feols(log(cpue_tot_days) ~ ..post_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
+                      feols(log(cpue_tot_sets) ~ ..post_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")) |> 
+          set_names(outcomes_ps)
       }
     } else if (spec == "es") {
       if (outcome == "levels") {
-        model <- list(
-          feols(cpue_tot_days ~ ..dyn_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
-          feols(cpue_tot_sets ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps)
+        model <- list(feols(cpue_tot_days ~ ..dyn_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
+                      feols(cpue_tot_sets ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")) |> 
+          set_names(outcomes_ps)
       } else if (outcome == "logs") {
-        model <- list(
-          feols(log(cpue_tot_days) ~ ..dyn_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
-          feols(log(cpue_tot_sets) ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")
-        ) |> set_names(outcomes_ps)
+        model <- list(feols(log(cpue_tot_days) ~ ..dyn_twfe | ..fe, weights = ~days,     data = inside_data, se = "conley"),
+                      feols(log(cpue_tot_sets) ~ ..dyn_twfe | ..fe, weights = ~num_sets, data = inside_data, se = "conley")) |> 
+          set_names(outcomes_ps_log)
       }
     }
     } else if (gear == "ll") {
@@ -181,7 +176,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", gear = "ps", data){
                          weights = ~thooks,
                          data = inside_data,
                          se = "conley") |> 
-            set_names(outcomes_ll)
+            set_names(outcomes_ll_log)
         }
       }
     }
@@ -246,7 +241,7 @@ yft_ll_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", gear = "ll
 coef <- c("post" = "Post",
           "post:near" = "Post x Near")
 
-se_dist <- str_extract(attr(skj_ps_levels_post[[1]]$se, "type"), "[:digit:]+km")
+se_dist <- str_extract(attr(skj_ps_levels_post[[1]]$se, "vcov_type"), "[:digit:]+km")
 
 # Mean outcomes
 skj_data <- ps_data |>
@@ -263,151 +258,107 @@ notes <- paste(note_obs, note_fe,
   paste0("Numbers in parentheses are Conley standard errors with a ", se_dist, " radius."))
 notes_main <- paste(notes, note_ybar)
 
-# Needs caption
-# Needs mean of Y in pre-treatment period
-modelsummary(skj_ps_levels_post,
-             title = "\\label{tab:h3}Coefficient estimates for change in skipjack tuna CPUE in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
+# Main-text table
+save_table(skj_ps_levels_post,
+           small = FALSE,
+           title = "\\label{tab:h3}Coefficient estimates for change in skipjack tuna CPUE in the purse seine fleet operating
+             in areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.",
-             stars = tab_stars,
-             gof_omit = gof_omit,
-             coef_map = coef,
-             add_rows = rows,
-             notes = notes_main,
-             escape = F,
-             output = here("content/tab/h3_reg.tex"))
-wrap_notes(here("content/tab/h3_reg.tex"))
+           coef_map = coef,
+           add_rows = rows,
+           notes = notes_main,
+           path = here("content/tab/h3_reg.tex"))
 
 ## Supplementary tables --------------------------------------------------------
 # Purse seine
-msummary(list("A) Levels" = all_ps_levels_post,
-              "B) Log-transformed" = all_ps_logs_post),
-         title = "\\label{tab:h3_reg_all_ps}Coefficient estimates for change in all tuna CPUE caught by the purse seine fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
+save_table(list("A) Levels" = all_ps_levels_post,
+                "B) Log-transformed" = all_ps_logs_post),
+           title = "\\label{tab:h3_reg_all_ps}Coefficient estimates for change in all tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_all_ps.tex"))
-make_small(here("content", "tab", "h3_reg_all_ps.tex"))
-wrap_notes(here("content", "tab", "h3_reg_all_ps.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_all_ps.tex"))
 
-msummary(list("A) Levels" = bet_ps_levels_post,
-              "B) Log-transformed" = bet_ps_logs_post),
-         title = "\\label{tab:h3_reg_bet_ps}Coefficient estimates for change in bigeye tuna CPUE caught by the purse seine fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
+save_table(list("A) Levels" = bet_ps_levels_post,
+                "B) Log-transformed" = bet_ps_logs_post),
+           title = "\\label{tab:h3_reg_bet_ps}Coefficient estimates for change in bigeye tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_bet_ps.tex"))
-make_small(here("content", "tab", "h3_reg_bet_ps.tex"))
-wrap_notes(here("content", "tab", "h3_reg_bet_ps.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_bet_ps.tex"))
 
-msummary(list("A) Levels" = skj_ps_levels_post,
-              "B) Log-transformed" = skj_ps_logs_post),
-         title = "\\label{tab:h3_reg_skj_ps}Coefficient estimates for change in skipjack tuna CPUE caught by the purse seine fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
+save_table(list("A) Levels" = skj_ps_levels_post,
+                "B) Log-transformed" = skj_ps_logs_post),
+           title = "\\label{tab:h3_reg_skj_ps}Coefficient estimates for change in skipjack tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_skj_ps.tex"))
-make_small(here("content", "tab", "h3_reg_skj_ps.tex"))
-wrap_notes(here("content", "tab", "h3_reg_skj_ps.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_skj_ps.tex"))
 
-msummary(list("A) Levels" = yft_ps_levels_post,
-              "B) Log-transformed" = yft_ps_logs_post),
-         title = "\\label{tab:h3_reg_yft_ps}Coefficient estimates for change in yellowfin tuna CPUE caught by the purse seine fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
+save_table(list("A) Levels" = yft_ps_levels_post,
+                "B) Log-transformed" = yft_ps_logs_post),
+           title = "\\label{tab:h3_reg_yft_ps}Coefficient estimates for change in yellowfin tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
              observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_yft_ps.tex"))
-make_small(here("content", "tab", "h3_reg_yft_ps.tex"))
-wrap_notes(here("content", "tab", "h3_reg_yft_ps.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_yft_ps.tex"))
 
 # Longline
-msummary(list("A) Levels" = all_ll_levels_post,
-              "B) Log-transformed" = all_ll_logs_post),
-         title = "\\label{tab:h3_reg_all_ll}Coefficient estimates for change in all tuna CPUE caught by the longline fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+save_table(list("A) Levels" = all_ll_levels_post,
+                "B) Log-transformed" = all_ll_logs_post),
+           title = "\\label{tab:h3_reg_all_ll}Coefficient estimates for change in all tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_all_ll.tex"))
-make_small(here("content", "tab", "h3_reg_all_ll.tex"))
-wrap_notes(here("content", "tab", "h3_reg_all_ll.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_all_ll.tex"))
 
-msummary(list("A) Levels" = alb_ll_levels_post,
-              "B) Log-transformed" = alb_ll_logs_post),
-         title = "\\label{tab:h3_reg_alb_ll}Coefficient estimates for change in albacore tuna CPUE caught by the longline fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+save_table(list("A) Levels" = alb_ll_levels_post,
+                "B) Log-transformed" = alb_ll_logs_post),
+           title = "\\label{tab:h3_reg_alb_ll}Coefficient estimates for change in albacore tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_alb_ll.tex"))
-make_small(here("content", "tab", "h3_reg_alb_ll.tex"))
-wrap_notes(here("content", "tab", "h3_reg_alb_ll.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_alb_ll.tex"))
 
-msummary(list("A) Levels" = bet_ll_levels_post,
-              "B) Log-transformed" = bet_ll_logs_post),
-         title = "\\label{tab:h3_reg_bet_ll}Coefficient estimates for change in bigeye tuna CPUE caught by the longline fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+save_table(list("A) Levels" = bet_ll_levels_post,
+                "B) Log-transformed" = bet_ll_logs_post),
+           title = "\\label{tab:h3_reg_bet_ll}Coefficient estimates for change in bigeye tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_bet_ll.tex"))
-make_small(here("content", "tab", "h3_reg_bet_ll.tex"))
-wrap_notes(here("content", "tab", "h3_reg_bet_ll.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_bet_ll.tex"))
 
-msummary(list("A) Levels" = yft_ll_levels_post,
-              "B) Log-transformed" = yft_ll_logs_post),
-         title = "\\label{tab:h3_reg_yft_ll}Coefficient estimates for change in yellowfin tuna CPUE caught by the longline fleet in
-             areas within 100 nautical miles of the high seas pocket after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+save_table(list("A) Levels" = yft_ll_levels_post,
+                "B) Log-transformed" = yft_ll_logs_post),
+           title = "\\label{tab:h3_reg_yft_ll}Coefficient estimates for change in yellowfin tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+             observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h3_reg_yft_ll.tex"))
-make_small(here("content", "tab", "h3_reg_yft_ll.tex"))
-wrap_notes(here("content", "tab", "h3_reg_yft_ll.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h3_reg_yft_ll.tex"))
 
 ## Summary stats ---------------------------------------------------------------
 write_summary <- function(x, ts = F, append = T) {
@@ -475,7 +426,7 @@ ts_days <- ggplot(skj_data,
         legend.background = element_blank()) +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (mt/day)",
+       y = "CPUE ± 95% CI (mt/day)",
        linetype = "Treatment")
 
 ts_sets <- ggplot(skj_data,
@@ -507,7 +458,7 @@ ts_sets <- ggplot(skj_data,
   theme(legend.position = "none") +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (mt/set)")
+       y = "CPUE ± 95% CI (mt/set)")
 
 skj_raster <- as.raster(
   image_read_svg(here::here("data/raw/fish_pics/SKJ.svg"), width = 500)
@@ -556,6 +507,7 @@ ggsave(plot = figure,
 # EXPORT #######################################################################
 
 ## Supplementary event-study figures -------------------------------------------
+my_labeller <- labeller(lhs = function(x){str_replace_all(x, ".", "")})
 
 # Purse seine
 all_ps_es <- ggiplot(c(all_ps_levels_es, all_ps_logs_es),
@@ -564,9 +516,12 @@ all_ps_es <- ggiplot(c(all_ps_levels_es, all_ps_logs_es),
                      col = rep(ps_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = "All species (purse seine)",
        x = "Year")
 
@@ -576,10 +531,13 @@ bet_ps_es <- ggiplot(c(bet_ps_levels_es, bet_ps_logs_es),
                      col = rep(bet_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
-  labs(title = "bigeye (purse seine)",
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(title = "Bigeye (purse seine)",
        x = "Year")
 
 skj_ps_es <- ggiplot(c(skj_ps_levels_es, skj_ps_logs_es),
@@ -588,10 +546,13 @@ skj_ps_es <- ggiplot(c(skj_ps_levels_es, skj_ps_logs_es),
                      col = rep(skj_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
-  labs(title = "skipjack (purse seine)",
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(title = "Skipjack (purse seine)",
        x = "Year")
 
 yft_ps_es <- ggiplot(c(yft_ps_levels_es, yft_ps_logs_es),
@@ -600,59 +561,74 @@ yft_ps_es <- ggiplot(c(yft_ps_levels_es, yft_ps_logs_es),
                      col = rep(yft_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
-  labs(title = "yellowfin (purse seine)",
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(title = "Yellowfin (purse seine)",
        x = "Year")
 
 # Longline
-all_ll_es <- ggiplot(list(all_ll_levels_es, all_ll_logs_es),
+all_ll_es <- ggiplot(c(all_ll_levels_es, all_ll_logs_es),
                      geom_style = "ribbon",
                      multi_style = "facet",
-                     col = rep(ll_color, 2),
+                     col = rep(ll_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = "All species (longline)",
        x = "Year")
 
-alb_ll_es <- ggiplot(list(alb_ll_levels_es, alb_ll_logs_es),
+alb_ll_es <- ggiplot(c(alb_ll_levels_es, alb_ll_logs_es),
                      geom_style = "ribbon",
                      multi_style = "facet",
-                     col = rep(alb_color, 2),
+                     col = rep(alb_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
-  labs(title = "albacore (longline)",
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(title = "Albacore (longline)",
        x = "Year")
 
-bet_ll_es <- ggiplot(list(bet_ll_levels_es, bet_ll_logs_es),
+bet_ll_es <- ggiplot(c(bet_ll_levels_es, bet_ll_logs_es),
                      geom_style = "ribbon",
                      multi_style = "facet",
-                     col = rep(bet_color, 2),
+                     col = rep(bet_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
-  labs(title = "bigeye (longline)",
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(title = "Bigeye (longline)",
        x = "Year")
 
-yft_ll_es <- ggiplot(list(yft_ll_levels_es, yft_ll_logs_es),
+yft_ll_es <- ggiplot(c(yft_ll_levels_es, yft_ll_logs_es),
                      geom_style = "ribbon",
                      multi_style = "facet",
-                     col = rep(yft_color, 2),
+                     col = rep(yft_color, 4),
                      pt.pch = 1,
                      facet_args = list(scales = "free_y",
-                                       ncol = 2)) +
+                                       ncol = 2,
+                                       labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
-  labs(title = "yellowfin (longline)",
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(title = "Yellowfin (longline)",
        x = "Year")
 
 ## Save event-study figures ----------------------------------------------------

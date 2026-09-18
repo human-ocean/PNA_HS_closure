@@ -45,6 +45,7 @@ setFixest_fml(
 setFixest_dict(dict = c("post" = "Post"))
 
 outcomes <- c("fish / 1000 hooks", "mt / 1000 hooks")
+outcomes_logs <- c("log-fish / 1000 hooks", "log-mt / 1000 hooks")
 
 ## Estimate --------------------------------------------------------------------
 # 1) For total CPUE
@@ -70,7 +71,7 @@ all_logs_es <- feols(..logs ~ ..dyn_twfe | ..fe,
                      weights = ~thooks,
                      data = data,
                      se = "conley") |> 
-  set_names(outcomes)
+  set_names(outcomes_logs)
 
 # Now for each species ---------------------------------------------------------
 # Do it one species at a time. This requires that, for each species, we remove observations
@@ -113,7 +114,7 @@ fit_spp <- function(spp, spec = "post", outcome = "levels", data){
   }
   
   model <- model |> 
-    set_names(outcomes)
+    set_names(if (spec == "es" && outcome == "logs") outcomes_logs else outcomes)
   
   return(model)
 }
@@ -150,7 +151,7 @@ yft_logs_es <- fit_spp(spp = "yft", spec = "es", outcome = "logs", data = data)
 coef <- c("post" = "Post",
           "post:treated" = "Post x Treated")
 
-se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "type"), "[:digit:]+km")
+se_dist <- str_extract(attr(bet_levels_post[[1]]$se, "vcov_type"), "[:digit:]+km")
 
 # Mean outcomes
 mean_n <- mean(data$cpue_bet_n[data$post == 0 & data$treated == 1])
@@ -166,95 +167,72 @@ notes_main <- paste(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
-modelsummary(bet_levels_post,
-             title = "\\label{tab:h2}Coefficient estimates for change in bigeye
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+save_table(bet_levels_post,
+           small = FALSE,
+           title = "\\label{tab:h2}Coefficient estimates for change in bigeye
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.",
-             stars = tab_stars,
-             gof_omit = gof_omit,
-             coef_map = coef,
-             add_rows = rows,
-             notes = notes_main,
-             escape = F,
-             output = here("content/tab/h2_reg.tex"))
-wrap_notes(here("content/tab/h2_reg.tex"))
+           coef_map = coef,
+           add_rows = rows,
+           notes = notes_main,
+           path = here("content/tab/h2_reg.tex"))
 
 ## Supplementary tables
 ## Build regression tables -----------------------------------------------------
 # Set defaults
-msummary(list("A) Levels" = all_levels_post,
-              "B) Log-transformed" = all_logs_post),
-         title = "\\label{tab:h2_reg_all}Coefficient estimates for change in all
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+save_table(list("A) Levels" = all_levels_post,
+                "B) Log-transformed" = all_logs_post),
+           title = "\\label{tab:h2_reg_all}Coefficient estimates for change in all
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h2_reg_all.tex"))
-make_small(here("content", "tab", "h2_reg_all.tex"))
-wrap_notes(here("content", "tab", "h2_reg_all.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h2_reg_all.tex"))
 
-msummary(list("A) Levels" = alb_levels_post,
-              "B) Log-transformed" = alb_logs_post),
-         title = "\\label{tab:h2_reg_alb}Coefficient estimates for change in albacore
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+save_table(list("A) Levels" = alb_levels_post,
+                "B) Log-transformed" = alb_logs_post),
+           title = "\\label{tab:h2_reg_alb}Coefficient estimates for change in albacore
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h2_reg_alb.tex"))
-make_small(here("content", "tab", "h2_reg_alb.tex"))
-wrap_notes(here("content", "tab", "h2_reg_alb.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h2_reg_alb.tex"))
 
-msummary(list("A) Levels" = bet_levels_post,
-              "B) Log-transformed" = bet_logs_post),
-         title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in bigeye
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+save_table(list("A) Levels" = bet_levels_post,
+                "B) Log-transformed" = bet_logs_post),
+           title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in bigeye
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels (same as in \\autoref{tab:h2}).
              Panel B presents results in
              which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h2_reg_bet.tex"))
-make_small(here("content", "tab", "h2_reg_bet.tex"))
-wrap_notes(here("content", "tab", "h2_reg_bet.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h2_reg_bet.tex"))
 
-msummary(list("A) Levels" = yft_levels_post,
-              "B) Log-transformed" = yft_logs_post),
-         title = "\\label{tab:h2_reg_yft}Coefficient estimates for change in yellowfin
-             tuna CPUE caught by the longline fleet in the high seas pockets after
+save_table(list("A) Levels" = yft_levels_post,
+                "B) Log-transformed" = yft_logs_post),
+           title = "\\label{tab:h2_reg_yft}Coefficient estimates for change in yellowfin
+             tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to changes in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is log-transformed.",
-         shape = "rbind",
-         stars = tab_stars,
-         gof_omit = gof_omit,
-         coef_map = coef,
-         notes = notes,
-         escape = F,
-         output = here("content", "tab", "h2_reg_yft.tex"))
-make_small(here("content", "tab", "h2_reg_yft.tex"))
-wrap_notes(here("content", "tab", "h2_reg_yft.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content", "tab", "h2_reg_yft.tex"))
 
 ## Summary stats ---------------------------------------------------------------
 write_summary <- function(x, ts = F, append = T) {
@@ -282,6 +260,7 @@ data |>
 # Top row is raw CPUE time series and bottom row are event-studies
 pos <- position_dodge(width = 0.5)
 
+# Time-series of catch (n)
 ts_n <- ggplot(data,
                aes(x = year, y = cpue_bet_n, group = treated, linetype = group)) +
   geom_vline(xintercept = 2009.5,
@@ -313,9 +292,10 @@ ts_n <- ggplot(data,
         legend.background = element_blank()) +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (fish / thousand hooks)",
+       y = "CPUE ± 95% CI\n(fish / thousand hooks)",
        linetype = "Treatment")
 
+# Time-series of catch (mt)
 ts_mt <- ggplot(data = data,
                 aes(x = year, y = cpue_bet_mt, group = treated, linetype = group)) +
   geom_vline(xintercept = 2009.5,
@@ -344,8 +324,9 @@ ts_mt <- ggplot(data = data,
   theme(legend.position = "none") +
   guides(fill = "none") +
   labs(x = "Year",
-       y = "CPUE (mt / thousand hooks)")
+       y = "CPUE ± 95% CI\n(mt / thousand hooks)")
 
+# Add a tuna on top of the mt plot
 bet_raster <- as.raster(
   image_read_svg(here::here("data/raw/fish_pics/BET.svg"), width = 500)
 )
@@ -365,6 +346,8 @@ ts_mt <- ts_mt +
                     ymin = ts_mt_yrange[2] - img_h,
                     ymax = ts_mt_yrange[2])
 
+# Now build the event studies
+# First for n
 es_n <- ggiplot(bet_levels_es[[1]],
                 geom_style = "ribbon",
                 col = bet_color) +
@@ -373,6 +356,7 @@ es_n <- ggiplot(bet_levels_es[[1]],
        y = "Estimate ± 95% CI\n(fish / thousand hooks)") +
   theme_linedraw()
 
+#Now for metric tons
 es_mt <- ggiplot(bet_levels_es[[2]],
                  geom_style = "ribbon",
                  col = bet_color,
@@ -382,13 +366,49 @@ es_mt <- ggiplot(bet_levels_es[[2]],
        y = "Estimate ± 95% CI\n(mt / thousand hooks)") +
   theme_linedraw()
 
-
+# Put it together
 figure <- plot_grid(ts_n, ts_mt,
                     es_n, es_mt,
                     labels = "AUTO")
 
 
 ## Supplementary figures -------------------------------------------------------
+
+# First, a time series of effort (thousand hooks)
+ts_hooks <- ggplot(data,
+               aes(x = year, y = thooks, group = treated, linetype = group)) +
+  geom_vline(xintercept = 2009.5,
+             linetype = "dashed",
+             linewidth = lw) +
+  stat_summary(geom = "line",
+               fun = "mean",
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "linerange", 
+               linetype = "solid",
+               fun.data = "mean_cl_normal",
+               linewidth = 0.5,
+               color = bet_color,
+               position = pos) +
+  stat_summary(aes(group = treated),
+               geom = "point",
+               fun = "mean",
+               size = pt_size,
+               color = bet_color,
+               position = pos) +
+  scale_linetype_manual(values = c("Control" = "dashed",
+                                   "Treatment" = "solid")) +
+  theme_linedraw() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(1, 1),
+        legend.justification.inside = c(1, 1),
+        legend.background = element_blank()) +
+  guides(fill = "none") +
+  labs(x = "Year",
+       y = "Effort (housand hooks)",
+       linetype = "Treatment")
+
 
 # Get coefficient estimates
 coef <- list("all_levels" = all_levels_post,
@@ -433,55 +453,69 @@ coefplot_logs <- coef |>
 
 
 # Event-study plots
+my_labeller <- labeller(lhs = function(x){str_replace_all(x, ".", "")})
+
 # For all species combined
-all_es <- ggiplot(list(all_levels_es, all_logs_es),
+all_es <- ggiplot(c(all_levels_es, all_logs_es),
                   geom_style = "ribbon",
                   multi_style = "facet",
-                  col = rep(ll_color, 2),
+                  col = rep(ll_color, 4),
                   pt.pch = 1,
                   facet_args = list(scales = "free_y",
-                                    ncol = 2)) +
+                                    ncol = 2,
+                                    labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = "All species",
        x = "Year")
 
 # For albacore  
-alb_es <- ggiplot(list(alb_levels_es, alb_logs_es),
+alb_es <- ggiplot(c(alb_levels_es, alb_logs_es),
                   geom_style = "ribbon",
-                  multi_style = "facet", 
-                  col = rep(alb_color, 2),
+                  multi_style = "facet",
+                  col = rep(alb_color, 4),
                   pt.pch = 1,
                   facet_args = list(scales = "free_y",
-                                    ncol = 2)) +
+                                    ncol = 2,
+                                    labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = "Albacore",
        x = "Year")
 
 # For bigeye
-bet_es <- ggiplot(list(bet_levels_es, bet_logs_es),
+bet_es <- ggiplot(c(bet_levels_es, bet_logs_es),
                   geom_style = "ribbon",
-                  multi_style = "facet", 
-                  col = rep(bet_color, 2),
+                  multi_style = "facet",
+                  col = rep(bet_color, 4),
                   pt.pch = 1,
                   facet_args = list(scales = "free_y",
-                                    ncol = 2)) +
+                                    ncol = 2,
+                                    labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = "Bigeye",
        x = "Year")
 
 # For yellowfin
-yft_es <- ggiplot(list(yft_levels_es, yft_logs_es),
+yft_es <- ggiplot(c(yft_levels_es, yft_logs_es),
                   geom_style = "ribbon",
-                  multi_style = "facet", 
-                  col = rep(yft_color, 2),
+                  multi_style = "facet",
+                  col = rep(yft_color, 4),
                   pt.pch = 1,
                   facet_args = list(scales = "free_y",
-                                    ncol = 2)) +
+                                    ncol = 2,
+                                    labeller = my_labeller)) +
   theme_linedraw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
   labs(title = "Yellowfin",
        x = "Year")
 
@@ -500,6 +534,11 @@ ggsave(plot = coefplot_logs,
        filename = here("content", "img", "h2_coefplot_logs.png"),
        width = 6,
        height = 4)
+
+ggsave(plot = ts_hooks,
+       filename = here("content/img/h2_effort_ts.png"),
+       width = 6, height = 4)
+
 
 plots <- list(all_es,
               alb_es,

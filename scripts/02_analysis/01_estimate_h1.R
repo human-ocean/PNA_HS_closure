@@ -46,7 +46,11 @@ setFixest_fml(
 
 setFixest_dict(dict = c(post = "Post"))
 
+# These vectors are used to rename model objects. We only use the ihs version
+# on dynamic (event-study) models because that's where we need it for the 
+# facets.
 outcomes <- c("Effort (days)", "Effort (sets)")
+outcomes_ihs <- c("ihs-Effort (days)", "ihs-Effort (sets)")
 
 
 ## Estimate --------------------------------------------------------------------
@@ -75,7 +79,7 @@ dyn_ihs <- feols(..ihs ~ ..dyn | ..fe,
                  data = data,
                  subset = ~treated ==1,
                  se = "conley") |> 
-  set_names(outcomes)
+  set_names(outcomes_ihs)
 
 # TWFE -------------------------------------------------------------------------
 ## Pre/post regressions
@@ -98,44 +102,50 @@ dyn_lev_twfe <- feols(..levels ~ ..dyn_twfe | ..twfe,
 dyn_ihs_twfe <- feols(..ihs ~ ..dyn_twfe | ..twfe,
                       data = data,
                       se = "conley") |> 
-  set_names(outcomes)
+  set_names(outcomes_ihs)
 
 # VISUALIZE ####################################################################
 
-## Another step ----------------------------------------------------------------
-p1 <- ggiplot(dyn_lev,
-             multi_style = "facet", 
-             facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
-  theme(legend.position = "none") +
-  labs(x = "Year")
+## Build event studies ---------------------------------------------------------
+my_labeller <- labeller(lhs = function(x){str_replace_all(x, ".", "")})
 
-p2 <- ggiplot(dyn_ihs,
-             multi_style = "facet", 
-             facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
-  theme(legend.position = "none") +
-  labs(x = "Year")
+# Self spec: combine levels and IHS outcomes into one faceted plot
+p1 <- ggiplot(c(dyn_lev, dyn_ihs),
+              geom_style = "ribbon",
+              multi_style = "facet",
+              col = rep(ps_color, 4),
+              pt.pch = 1,
+              facet_args = list(scales = "free_y",
+                                ncol = 2,
+                                labeller = my_labeller)) +
+  theme_linedraw() +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(x = "Year",
+       title = "")
 
-p3 <- ggiplot(dyn_lev_twfe,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
-  theme(legend.position = "none") +
-  labs(x = "Year")
-
-p4 <- ggiplot(dyn_ihs_twfe,
-              multi_style = "facet", 
-              facet_args = list(scales = "free_y", ncol = 1)) +
-  scale_color_manual(values = c(ps_color, ps_color)) +
-  theme(legend.position = "none") +
-  labs(x = "Year")
+# TWFE spec: combine levels and IHS outcomes into one faceted plot
+p2 <- ggiplot(c(dyn_lev_twfe, dyn_ihs_twfe),
+              geom_style = "ribbon",
+              multi_style = "facet",
+              col = rep(ps_color, 4),
+              pt.pch = 1,
+              facet_args = list(scales = "free_y",
+                                ncol = 2,
+                                labeller = my_labeller)) +
+  theme_linedraw() +
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black")) +
+  labs(x = "Year",
+       title = "")
 
 ## Tables ----------------------------------------------------------------------
 coef <- c("post" = "Post",
           "post:treated" = "Post x Treated")
 
-se_dist <- str_extract(attr(post_lev_twfe[[1]]$se, "type"), "[:digit:]+km")
+se_dist <- str_extract(attr(post_lev_twfe[[1]]$se, "vcov_type"), "[:digit:]+km")
 
 # Mean outcomes
 mean_days <- mean(data$days[data$post == 0 & data$treated == 1])
@@ -152,55 +162,42 @@ notes_main <- paste(notes, note_ybar)
 
 # Needs caption
 # Needs mean of Y in pre-treatment period
-modelsummary(post_lev_twfe,
-             title = "\\label{tab:h1}Coefficient estimates for the change in fishing effort inside
+save_table(post_lev_twfe,
+           small = FALSE,
+           title = "\\label{tab:h1}Coefficient estimates for change in fishing effort inside
              the high seas pockets after the closure, relative to changes in fishing effort
              observed for other comparable high seas areas in the WCPFC convention area.",
-             stars = tab_stars,
-             gof_omit = gof_omit,
-             coef_map = coef,
-             add_rows = rows,
-             notes = notes_main,
-             escape = F,
-             output = here("content/tab/h1_reg.tex"))
-wrap_notes(here("content/tab/h1_reg.tex"))
+           coef_map = coef,
+           add_rows = rows,
+           notes = notes_main,
+           path = here("content/tab/h1_reg.tex"))
 
-modelsummary(models = list("A) Levels" = post_lev,
-                           "B) Inverse-hyperbolic sine transformation" = post_ihs),
-             title = "\\label{tab:h1_self}Coefficient estimates for change in fishing
+save_table(models = list("A) Levels" = post_lev,
+                         "B) Inverse-hyperbolic sine transformation" = post_ihs),
+           title = "\\label{tab:h1_self}Coefficient estimates for change in fishing
              effort inside the high seas pockets after the closure.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is transformed using the inverse
              hyperbolic sine (IHS) transformation.",
-             shape = "rbind",
-             stars = tab_stars,
-             gof_omit = gof_omit,
-             coef_map = coef,
-             notes = paste(note_obs, 
-                           paste0("Numbers in parentheses are Conley standard errors using a ", se_dist, " radius.")),
-             escape = F,
-             output = here("content/tab/h1_reg_self.tex"))
-make_small(here("content/tab/h1_reg_self.tex"))
-wrap_notes(here("content/tab/h1_reg_self.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = paste(note_obs, 
+                         paste0("Numbers in parentheses are Conley standard errors using a ", se_dist, " radius.")),
+           path = here("content/tab/h1_reg_self.tex"))
 
-modelsummary(models = list("A) Levels" = post_lev_twfe,
-                           "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
-             title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing
+save_table(models = list("A) Levels" = post_lev_twfe,
+                         "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
+           title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing
              effort inside the high seas pockets after the closure, relative to changes in
              fishing effort observed in other comparable high seas areas of the WCPFC
              convention area. Panel A presents results in levels (identical to the
              main-text estimates in \\autoref{tab:h1}). Panel B presents results in
              which the dependent variable is transformed using the inverse
              hyperbolic sine (IHS) transformation.",
-             shape = "rbind",
-             stars = tab_stars,
-             gof_omit = gof_omit,
-             coef_map = coef,
-             notes = notes,
-             escape = F,
-             output = here("content/tab/h1_reg_twfe.tex"))
-make_small(here("content/tab/h1_reg_twfe.tex"))
-wrap_notes(here("content/tab/h1_reg_twfe.tex"))
+           shape = "rbind",
+           coef_map = coef,
+           notes = notes,
+           path = here("content/tab/h1_reg_twfe.tex"))
 
 ## Summary stats ---------------------------------------------------------------
 write_summary <- function(x, ts = F, append = T) {
@@ -226,7 +223,7 @@ data |>
   select(-year) |> 
   summarize_all(c(mean = mean, sd = sd)) |>
   kableExtra::kbl(format = "simple",
-                  caption = "Mean annual effort inside HS pockets") |>
+                  caption = "Mean annual effort inside HS pockets before closure") |>
   write_summary()
 
 data |> 
@@ -329,3 +326,11 @@ figure <- plot_grid(ts_days, ts_sets,
 ggsave(plot = figure,
        filename = here("content/img/h1_main_figure.png"),
        width = 9, height = 6)
+
+plots <- list(p1,
+              p2)
+
+walk2(.x = plots,
+      .y = c("self", "twfe"),
+      .f = es_save,
+      prefix = "h1")
