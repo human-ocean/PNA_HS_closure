@@ -169,9 +169,9 @@ notes_main <- paste(notes, note_ybar)
 # Needs mean of Y in pre-treatment period
 save_table(bet_levels_post,
            small = FALSE,
-           title = "\\label{tab:h2}Coefficient estimates for change in bigeye
+           title = "\\label{tab:h2}Coefficient estimates the for change in bigeye
              tuna CPUE in the longline fleet in the high seas pockets after
-             the closure, relative to changes in CPUE observed for other tropical
+             the closure, relative to the change in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.",
            coef_map = coef,
            add_rows = rows,
@@ -183,9 +183,9 @@ save_table(bet_levels_post,
 # Set defaults
 save_table(list("A) Levels" = all_levels_post,
                 "B) Log-transformed" = all_logs_post),
-           title = "\\label{tab:h2_reg_all}Coefficient estimates for change in all
+           title = "\\label{tab:h2_reg_all}Coefficient estimates for the change in all
              tuna CPUE in the longline fleet in the high seas pockets after
-             the closure, relative to changes in CPUE observed for other tropical
+             the closure, relative to the change in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is log-transformed.",
@@ -196,9 +196,9 @@ save_table(list("A) Levels" = all_levels_post,
 
 save_table(list("A) Levels" = alb_levels_post,
                 "B) Log-transformed" = alb_logs_post),
-           title = "\\label{tab:h2_reg_alb}Coefficient estimates for change in albacore
+           title = "\\label{tab:h2_reg_alb}Coefficient estimates for the change in albacore
              tuna CPUE in the longline fleet in the high seas pockets after
-             the closure, relative to changes in CPUE observed for other tropical
+             the closure, relative to the change in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is log-transformed.",
@@ -209,9 +209,9 @@ save_table(list("A) Levels" = alb_levels_post,
 
 save_table(list("A) Levels" = bet_levels_post,
                 "B) Log-transformed" = bet_logs_post),
-           title = "\\label{tab:h2_reg_bet}Coefficient estimates for change in bigeye
+           title = "\\label{tab:h2_reg_bet}Coefficient estimates for the change in bigeye
              tuna CPUE in the longline fleet in the high seas pockets after
-             the closure, relative to changes in CPUE observed for other tropical
+             the closure, relative to the change in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels (same as in \\autoref{tab:h2}).
              Panel B presents results in
@@ -223,9 +223,9 @@ save_table(list("A) Levels" = bet_levels_post,
 
 save_table(list("A) Levels" = yft_levels_post,
                 "B) Log-transformed" = yft_logs_post),
-           title = "\\label{tab:h2_reg_yft}Coefficient estimates for change in yellowfin
+           title = "\\label{tab:h2_reg_yft}Coefficient estimates for the change in yellowfin
              tuna CPUE in the longline fleet in the high seas pockets after
-             the closure, relative to changes in CPUE observed for other tropical
+             the closure, relative to the change in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is log-transformed.",
