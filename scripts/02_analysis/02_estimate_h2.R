@@ -169,7 +169,7 @@ notes_main <- paste(notes, note_ybar)
 # Needs mean of Y in pre-treatment period
 save_table(bet_levels_post,
            small = FALSE,
-           title = "\\label{tab:h2}Coefficient estimates the for change in bigeye
+           title = "\\label{tab:h2}Coefficient estimates for the change in bigeye
              tuna CPUE in the longline fleet in the high seas pockets after
              the closure, relative to the change in CPUE observed for other tropical
              (20°S - 20°N) high seas areas in the WCPFC convention area.",
