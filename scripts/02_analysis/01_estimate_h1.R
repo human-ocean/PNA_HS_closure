@@ -164,8 +164,8 @@ notes_main <- paste(notes, note_ybar)
 # Needs mean of Y in pre-treatment period
 save_table(post_lev_twfe,
            small = FALSE,
-           title = "\\label{tab:h1}Coefficient estimates for change in fishing effort inside
-             the high seas pockets after the closure, relative to changes in fishing effort
+           title = "\\label{tab:h1}Coefficient estimates for the change in fishing effort inside
+             the high seas pockets after the closure, relative to the change in fishing effort
              observed for other comparable high seas areas in the WCPFC convention area.",
            coef_map = coef,
            add_rows = rows,
@@ -174,7 +174,7 @@ save_table(post_lev_twfe,
 
 save_table(models = list("A) Levels" = post_lev,
                          "B) Inverse-hyperbolic sine transformation" = post_ihs),
-           title = "\\label{tab:h1_self}Coefficient estimates for change in fishing
+           title = "\\label{tab:h1_self}Coefficient estimates for the change in fishing
              effort inside the high seas pockets after the closure.
              Panel A presents results in levels. Panel B presents results in
              which the dependent variable is transformed using the inverse
@@ -187,8 +187,8 @@ save_table(models = list("A) Levels" = post_lev,
 
 save_table(models = list("A) Levels" = post_lev_twfe,
                          "B) Inverse-hyperbolic sine transformation" = post_ihs_twfe),
-           title = "\\label{tab:h1_twfe}Coefficient estimates for change in fishing
-             effort inside the high seas pockets after the closure, relative to changes in
+           title = "\\label{tab:h1_twfe}Coefficient estimates for the change in fishing
+             effort inside the high seas pockets after the closure, relative to the change in
              fishing effort observed in other comparable high seas areas of the WCPFC
              convention area. Panel A presents results in levels (identical to the
              main-text estimates in \\autoref{tab:h1}). Panel B presents results in
