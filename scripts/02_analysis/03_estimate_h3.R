@@ -261,9 +261,9 @@ notes_main <- paste(notes, note_ybar)
 # Main-text table
 save_table(skj_ps_levels_post,
            small = FALSE,
-           title = "\\label{tab:h3}Coefficient estimates for change in skipjack tuna CPUE in the purse seine fleet operating
-             in areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.",
+           title = "\\label{tab:h3}Coefficient estimates for the change in skipjack tuna CPUE in the purse seine fleet operating
+             in areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
+             observed for areas between 100 and 200 nautical miles and inside PNA Exclusive Economic Zones.",
            coef_map = coef,
            add_rows = rows,
            notes = notes_main,
@@ -273,9 +273,9 @@ save_table(skj_ps_levels_post,
 # Purse seine
 save_table(list("A) Levels" = all_ps_levels_post,
                 "B) Log-transformed" = all_ps_logs_post),
-           title = "\\label{tab:h3_reg_all_ps}Coefficient estimates for change in all tuna CPUE in the purse seine fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+           title = "\\label{tab:h3_reg_all_ps}Coefficient estimates for the change in all tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
+             observed for areas between 100 and 200 nautical miles and inside PNA Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
            coef_map = coef,
@@ -284,9 +284,9 @@ save_table(list("A) Levels" = all_ps_levels_post,
 
 save_table(list("A) Levels" = bet_ps_levels_post,
                 "B) Log-transformed" = bet_ps_logs_post),
-           title = "\\label{tab:h3_reg_bet_ps}Coefficient estimates for change in bigeye tuna CPUE in the purse seine fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+           title = "\\label{tab:h3_reg_bet_ps}Coefficient estimates for the change in bigeye tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
+             observed for areas between 100 and 200 nautical miles and inside PNA Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
            coef_map = coef,
@@ -295,9 +295,9 @@ save_table(list("A) Levels" = bet_ps_levels_post,
 
 save_table(list("A) Levels" = skj_ps_levels_post,
                 "B) Log-transformed" = skj_ps_logs_post),
-           title = "\\label{tab:h3_reg_skj_ps}Coefficient estimates for change in skipjack tuna CPUE in the purse seine fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+           title = "\\label{tab:h3_reg_skj_ps}Coefficient estimates for the change in skipjack tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
+             observed for areas between 100 and 200 nautical miles and inside PNA Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
            coef_map = coef,
@@ -306,9 +306,9 @@ save_table(list("A) Levels" = skj_ps_levels_post,
 
 save_table(list("A) Levels" = yft_ps_levels_post,
                 "B) Log-transformed" = yft_ps_logs_post),
-           title = "\\label{tab:h3_reg_yft_ps}Coefficient estimates for change in yellowfin tuna CPUE in the purse seine fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
-             observed for areas between 100 and 200 nautical miles and inside PNA nation's Exclusive Economic Zones.
+           title = "\\label{tab:h3_reg_yft_ps}Coefficient estimates for the change in yellowfin tuna CPUE in the purse seine fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
+             observed for areas between 100 and 200 nautical miles and inside PNA Exclusive Economic Zones.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
            coef_map = coef,
@@ -318,8 +318,8 @@ save_table(list("A) Levels" = yft_ps_levels_post,
 # Longline
 save_table(list("A) Levels" = all_ll_levels_post,
                 "B) Log-transformed" = all_ll_logs_post),
-           title = "\\label{tab:h3_reg_all_ll}Coefficient estimates for change in all tuna CPUE in the longline fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+           title = "\\label{tab:h3_reg_all_ll}Coefficient estimates for the change in all tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
              observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
@@ -329,8 +329,8 @@ save_table(list("A) Levels" = all_ll_levels_post,
 
 save_table(list("A) Levels" = alb_ll_levels_post,
                 "B) Log-transformed" = alb_ll_logs_post),
-           title = "\\label{tab:h3_reg_alb_ll}Coefficient estimates for change in albacore tuna CPUE in the longline fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+           title = "\\label{tab:h3_reg_alb_ll}Coefficient estimates for the change in albacore tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
              observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
@@ -340,8 +340,8 @@ save_table(list("A) Levels" = alb_ll_levels_post,
 
 save_table(list("A) Levels" = bet_ll_levels_post,
                 "B) Log-transformed" = bet_ll_logs_post),
-           title = "\\label{tab:h3_reg_bet_ll}Coefficient estimates for change in bigeye tuna CPUE in the longline fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+           title = "\\label{tab:h3_reg_bet_ll}Coefficient estimates for the change in bigeye tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
              observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
@@ -351,8 +351,8 @@ save_table(list("A) Levels" = bet_ll_levels_post,
 
 save_table(list("A) Levels" = yft_ll_levels_post,
                 "B) Log-transformed" = yft_ll_logs_post),
-           title = "\\label{tab:h3_reg_yft_ll}Coefficient estimates for change in yellowfin tuna CPUE in the longline fleet in
-             areas within 100 nautical miles of the high seas pockets after the closure, relative to changes in CPUE
+           title = "\\label{tab:h3_reg_yft_ll}Coefficient estimates for the change in yellowfin tuna CPUE in the longline fleet in
+             areas within 100 nautical miles of the high seas pockets after the closure, relative to the change in CPUE
              observed for areas between 100 and 200 nautical miles.
              Panel A presents results in levels. Panel B presents results in which the dependent variable is log-transformed.",
            shape = "rbind",
