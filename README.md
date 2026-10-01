@@ -1,6 +1,6 @@
 # Limited Conservation Benefits From the First Marine Protected Area in the High Seas
 
-[![Preregistration](https://img.shields.io/badge/preregistration-OSF-blue)](PNA_HS_closure_prereg.pdf)
+[![Preregistration](https://img.shields.io/badge/preregistration-OSF-blue)](preregistration/PNA_HS_closure_prereg_v2.pdf)
 
 Data and code for our evaluation of the world's first large-scale spatial closure
 in areas beyond national jurisdiction.
